@@ -1,7 +1,6 @@
 module "traefik" {
-  source      = "../../modules/traefik"
-  domain      = var.hosted_domain
-  admin_email = var.admin_email
+  source = "../../modules/traefik"
+  domain = var.hosted_domain
 }
 module "zitadel" {
   source              = "../../modules/zitadel"
