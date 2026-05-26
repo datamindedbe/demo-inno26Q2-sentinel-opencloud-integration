@@ -15,16 +15,16 @@ This directory is used to bootstrap storage bucket on UpCloud, which will be use
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | 1.10.5 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | 1.11.4 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | 3.6.3 |
-| <a name="requirement_upcloud"></a> [upcloud](#requirement\_upcloud) | 5.25.0 |
+| <a name="requirement_upcloud"></a> [upcloud](#requirement\_upcloud) | 5.38.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
-| <a name="provider_upcloud"></a> [upcloud](#provider\_upcloud) | 5.25.0 |
+| <a name="provider_upcloud"></a> [upcloud](#provider\_upcloud) | 5.38.0 |
 
 ## Modules
 
@@ -35,11 +35,11 @@ No modules.
 | Name | Type |
 |------|------|
 | [random_string.random-suffix](https://registry.terraform.io/providers/hashicorp/random/3.6.3/docs/resources/string) | resource |
-| [upcloud_managed_object_storage.this](https://registry.terraform.io/providers/upcloudltd/upcloud/5.25.0/docs/resources/managed_object_storage) | resource |
-| [upcloud_managed_object_storage_bucket.bucket](https://registry.terraform.io/providers/upcloudltd/upcloud/5.25.0/docs/resources/managed_object_storage_bucket) | resource |
-| [upcloud_managed_object_storage_user.tf_user](https://registry.terraform.io/providers/upcloudltd/upcloud/5.25.0/docs/resources/managed_object_storage_user) | resource |
-| [upcloud_managed_object_storage_user_access_key.tf_user](https://registry.terraform.io/providers/upcloudltd/upcloud/5.25.0/docs/resources/managed_object_storage_user_access_key) | resource |
-| [upcloud_managed_object_storage_user_policy.this](https://registry.terraform.io/providers/upcloudltd/upcloud/5.25.0/docs/resources/managed_object_storage_user_policy) | resource |
+| [upcloud_managed_object_storage.this](https://registry.terraform.io/providers/upcloudltd/upcloud/5.38.0/docs/resources/managed_object_storage) | resource |
+| [upcloud_managed_object_storage_bucket.bucket](https://registry.terraform.io/providers/upcloudltd/upcloud/5.38.0/docs/resources/managed_object_storage_bucket) | resource |
+| [upcloud_managed_object_storage_user.tf_user](https://registry.terraform.io/providers/upcloudltd/upcloud/5.38.0/docs/resources/managed_object_storage_user) | resource |
+| [upcloud_managed_object_storage_user_access_key.tf_user](https://registry.terraform.io/providers/upcloudltd/upcloud/5.38.0/docs/resources/managed_object_storage_user_access_key) | resource |
+| [upcloud_managed_object_storage_user_policy.this](https://registry.terraform.io/providers/upcloudltd/upcloud/5.38.0/docs/resources/managed_object_storage_user_policy) | resource |
 
 ## Inputs
 

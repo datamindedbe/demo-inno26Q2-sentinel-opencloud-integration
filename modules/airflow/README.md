@@ -20,7 +20,7 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [helm_release.trino](https://registry.terraform.io/providers/hashicorp/helm/2.16.1/docs/resources/release) | resource |
+| [helm_release.airflow](https://registry.terraform.io/providers/hashicorp/helm/2.16.1/docs/resources/release) | resource |
 
 ## Inputs
 

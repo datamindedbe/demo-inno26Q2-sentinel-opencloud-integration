@@ -3,12 +3,12 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | 1.10.5 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | 1.11.4 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | 2.16.1 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.38.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | 2.5.3 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | 3.6.3 |
-| <a name="requirement_upcloud"></a> [upcloud](#requirement\_upcloud) | 5.25.0 |
+| <a name="requirement_upcloud"></a> [upcloud](#requirement\_upcloud) | 5.38.0 |
 
 ## Providers
 
@@ -17,7 +17,7 @@
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.38.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | 2.5.3 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
-| <a name="provider_upcloud"></a> [upcloud](#provider\_upcloud) | 5.25.0 |
+| <a name="provider_upcloud"></a> [upcloud](#provider\_upcloud) | 5.38.0 |
 
 ## Modules
 
@@ -40,19 +40,19 @@
 | [local_sensitive_file.kubeconfig](https://registry.terraform.io/providers/hashicorp/local/2.5.3/docs/resources/sensitive_file) | resource |
 | [random_password.db_admin_password](https://registry.terraform.io/providers/hashicorp/random/3.6.3/docs/resources/password) | resource |
 | [random_string.random](https://registry.terraform.io/providers/hashicorp/random/3.6.3/docs/resources/string) | resource |
-| [upcloud_gateway.gw](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/gateway) | resource |
-| [upcloud_kubernetes_cluster.this](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/kubernetes_cluster) | resource |
-| [upcloud_kubernetes_node_group.default_group](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/kubernetes_node_group) | resource |
-| [upcloud_managed_database_logical_database.lakekeeper_db](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/managed_database_logical_database) | resource |
-| [upcloud_managed_database_postgresql.db](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/managed_database_postgresql) | resource |
-| [upcloud_managed_object_storage.dp-stack-data](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/managed_object_storage) | resource |
-| [upcloud_managed_object_storage_bucket.bucket](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/managed_object_storage_bucket) | resource |
-| [upcloud_managed_object_storage_user.storage_user](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/managed_object_storage_user) | resource |
-| [upcloud_managed_object_storage_user_access_key.storage_key](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/managed_object_storage_user_access_key) | resource |
-| [upcloud_managed_object_storage_user_policy.this](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/managed_object_storage_user_policy) | resource |
-| [upcloud_network.k8s_private_node_network](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/network) | resource |
-| [upcloud_router.router](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/resources/router) | resource |
-| [upcloud_kubernetes_cluster.this](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.25.0/docs/data-sources/kubernetes_cluster) | data source |
+| [upcloud_gateway.gw](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/gateway) | resource |
+| [upcloud_kubernetes_cluster.this](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/kubernetes_cluster) | resource |
+| [upcloud_kubernetes_node_group.default_group](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/kubernetes_node_group) | resource |
+| [upcloud_managed_database_logical_database.lakekeeper_db](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/managed_database_logical_database) | resource |
+| [upcloud_managed_database_postgresql.db](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/managed_database_postgresql) | resource |
+| [upcloud_managed_object_storage.dp-stack-data](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/managed_object_storage) | resource |
+| [upcloud_managed_object_storage_bucket.bucket](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/managed_object_storage_bucket) | resource |
+| [upcloud_managed_object_storage_user.storage_user](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/managed_object_storage_user) | resource |
+| [upcloud_managed_object_storage_user_access_key.storage_key](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/managed_object_storage_user_access_key) | resource |
+| [upcloud_managed_object_storage_user_policy.this](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/managed_object_storage_user_policy) | resource |
+| [upcloud_network.k8s_private_node_network](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/network) | resource |
+| [upcloud_router.router](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/resources/router) | resource |
+| [upcloud_kubernetes_cluster.this](https://registry.terraform.io/providers/UpCloudLtd/upcloud/5.38.0/docs/data-sources/kubernetes_cluster) | data source |
 
 ## Inputs
 
@@ -65,7 +65,7 @@
 | <a name="input_k8s_default_node_count"></a> [k8s\_default\_node\_count](#input\_k8s\_default\_node\_count) | The number of static nodes to create in the kubernetes worker node group. | `number` | `2` | no |
 | <a name="input_k8s_default_node_type"></a> [k8s\_default\_node\_type](#input\_k8s\_default\_node\_type) | The node plan to use for the kubernetes worker nodes. | `string` | `"4xCPU-8GB"` | no |
 | <a name="input_k8s_network_range"></a> [k8s\_network\_range](#input\_k8s\_network\_range) | CIDR range used by the cluster SDN network. | `string` | `"10.10.0.0/22"` | no |
-| <a name="input_k8s_version"></a> [k8s\_version](#input\_k8s\_version) | The kubernetes version to use. | `string` | `"1.32"` | no |
+| <a name="input_k8s_version"></a> [k8s\_version](#input\_k8s\_version) | The kubernetes version to use. | `string` | `"1.35"` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region to deploy resources in. More details at: https://upcloud.com/docs/products/managed-object-storage/availability/ | `string` | `"europe-1"` | no |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | A prefix to use for naming resources. | `string` | `"dp-demo-stack"` | no |
 | <a name="input_storage_bucket_domain_name"></a> [storage\_bucket\_domain\_name](#input\_storage\_bucket\_domain\_name) | The domain name of the s3 storage bucket endpoint. | `string` | n/a | yes |
