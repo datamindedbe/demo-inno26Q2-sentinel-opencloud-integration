@@ -3,7 +3,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | 1.10.5 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | 1.11.4 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | 1.11.4 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | 2.16.1 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.38.0 |
 | <a name="requirement_zitadel"></a> [zitadel](#requirement\_zitadel) | 2.2.0 |
@@ -16,6 +17,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_airflow"></a> [airflow](#module\_airflow) | ../../modules/airflow | n/a |
 | <a name="module_lakekeeper"></a> [lakekeeper](#module\_lakekeeper) | ../../modules/lakekeeper | n/a |
 | <a name="module_opa"></a> [opa](#module\_opa) | ../../modules/opa | n/a |
 | <a name="module_trino"></a> [trino](#module\_trino) | ../../modules/trino | n/a |
