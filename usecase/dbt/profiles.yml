@@ -3,12 +3,11 @@ healthcare:
   outputs:
     dev:
       type: trino
-      method: jwt
+      method: none
       host: "{{ env_var('TRINO_HOST', 'trino.<HOST>') }}"
       port: 443
       http_scheme: https
       database: iceberg
       schema: demo
       threads: 1
-      user: ""
-      jwt_token: "{{ env_var('TRINO_JWT_TOKEN') }}"
+      user: "niels.claeys@dataminded.com"

@@ -141,6 +141,7 @@ tofu output s3_warehouse_info
 
 Now go to the Lakekeeper UI at `https://lakekeeper.<your-domain>/ui` and login. 
 From there click on `Warehouses` in the left menu and then click on `Create Warehouse`.
+The intrastructure code assumes that the warehouse name is `iceberg`.
 Fill in the form using the information retrieved from the previous command.
 
 ### Running your first SQL queries
@@ -184,12 +185,17 @@ SELECT * FROM iceberg.demo.events ORDER BY ts DESC LIMIT 10;
 
 Congratulations! Your open-source data platform is now live on UpCloud. You can connect to Trino, create Iceberg tables, insert sample data, and query it using SQL.
 
+### Running an actual usecase
+
+If you want to try out a more real-world usecase, you can follow the instructions in the [usecase](../usecase/README.md) directory.
+This usecase uses synthetic patient data and creates a first dbt pipeline to go from raw data to aggrated.
+
 ## Next steps
 In order to make this stack production ready, you will need to take care of the following:
 
-- Harden OPA policies to enforce strict access cotnrol in Trino and Lakekeeper At the moment we allow all actions, but we provide the necessary rego files to restrict access using Lakekeeper.
-  For more information, check [our blog on the topic](https://medium.com/datamindedbe/locking-down-your-data-fine-grained-data-access-on-eu-clouds-41e3d5108062) as well as the [Lakekeeper OPA bridge](https://docs.lakekeeper.io/docs/latest/opa/) for the details.
-- Enable Zitadel based OIDC authentication for both uses and inter-service communication.
+- Harden OPA policies to enforce strict access control in Trino and Lakekeeper At the moment we allow all actions, but we provide the necessary rego files to restrict access using Lakekeeper.
+  For more information, check [our blog on the topic](https://medium.com/datamindedbe/locking-down-your-data-fine-grained-data-access-on-eu-clouds-41e3d5108062) as well as the [Lakekeeper OPA bridge](https://docs.lakekeeper.io/docs/latest/opa/) for the details. If you want to try out, take a look at the [secure-setup ](https://github.com/datamindedbe/demo-upcloud-data-platform/tree/secure-setup) branch.
+- Enable Zitadel based OIDC authentication for both uses and inter-service communication. If you want to try out, take a look at the [secure-setup ](https://github.com/datamindedbe/demo-upcloud-data-platform/tree/secure-setup) branch.
 - Enable autoscaling of your kubernetes cluster by deploying the [cluster-autoscaler](https://upcloud.com/docs/guides/cluster-autoscaler/).
 - Extend the stack with additional components such as Airflow for orchestration, Hashicorp Vault for secret management.
 
