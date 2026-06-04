@@ -12,41 +12,61 @@ from botocore.config import Config
 
 @dataclass
 class STSAuth:
-    """Credentials for the Keycloak → STS → temp-credentials flow.
+    """Credentials for the OIDC → STS → temp-credentials flow.
 
     Used when the S3 endpoint is a reverse proxy that validates JWT session tokens
     (e.g. s3sentinel). Set all fields to enable; leave unset for standard AWS auth.
+
+    Supports two OIDC grant types:
+    - "password"            — Keycloak ROPC (username + password required)
+    - "client_credentials"  — ZITADEL / any IdP that supports machine-to-machine auth
+                              (client_id + client_secret required; username/password ignored)
     """
 
     keycloak_url: str
     sts_endpoint: str
-    username: str
-    password: str
     client_id: str = "s3sentinel"
     role_arn: str = "arn:aws:iam::000000000000:role/s3sentinel"
     role_session_name: str = "benchmark"
+    grant_type: str = "password"        # "password" or "client_credentials"
+    username: str | None = None         # required for password grant
+    password: str | None = None         # required for password grant
+    client_secret: str | None = None    # required for client_credentials grant
+    # Extra scopes appended to the token request (space-separated).
+    # ZITADEL requires urn:zitadel:iam:org:project:id:<project_id>:aud
+    # to include the project audience in the JWT.
+    oidc_scope: str = "openid"
 
     @classmethod
     def from_env(cls) -> STSAuth | None:
         """Return an STSAuth from env vars, or None if not configured."""
         keycloak_url = os.getenv("KEYCLOAK_URL")
         sts_endpoint = os.getenv("STS_ENDPOINT_URL")
-        username = os.getenv("OIDC_USERNAME")
-        password = os.getenv("OIDC_PASSWORD")
-        if not all([keycloak_url, sts_endpoint, username, password]):
+        if not all([keycloak_url, sts_endpoint]):
             return None
+        grant_type = os.getenv("OIDC_GRANT_TYPE", "password")
+        # Validate we have enough credentials for the requested grant type
+        if grant_type == "client_credentials":
+            if not os.getenv("OIDC_CLIENT_SECRET"):
+                return None
+        else:
+            if not all([os.getenv("OIDC_USERNAME"), os.getenv("OIDC_PASSWORD")]):
+                return None
         return cls(
             keycloak_url=keycloak_url,
             sts_endpoint=sts_endpoint,
-            username=username,
-            password=password,
             client_id=os.getenv("OIDC_CLIENT_ID", "s3sentinel"),
             role_arn=os.getenv("ROLE_ARN", "arn:aws:iam::000000000000:role/s3sentinel"),
             role_session_name=os.getenv("ROLE_SESSION_NAME", "benchmark"),
+            grant_type=grant_type,
+            username=os.getenv("OIDC_USERNAME"),
+            password=os.getenv("OIDC_PASSWORD"),
+            client_secret=os.getenv("OIDC_CLIENT_SECRET"),
+            oidc_scope=os.getenv("OIDC_SCOPE", "openid"),
         )
 
     def resolve(self) -> dict:
-        """Fetch an OIDC token from Keycloak and exchange it for S3 credentials via STS.
+        """Fetch an OIDC token and exchange it for S3 credentials via STS.
 
         Returns a dict with AccessKeyId, SecretAccessKey, SessionToken.
         """
@@ -54,16 +74,34 @@ class STSAuth:
         return self._assume_role(jwt_token)
 
     def _get_jwt_token(self) -> str:
-        data = urllib.parse.urlencode(
-            {
-                "grant_type": "password",
-                "client_id": self.client_id,
-                "username": self.username,
-                "password": self.password,
+        if self.grant_type == "client_credentials":
+            params = {
+                "grant_type": "client_credentials",
+                "scope": self.oidc_scope,
             }
-        ).encode()
-        with urllib.request.urlopen(self.keycloak_url, data) as r:
-            return json.load(r)["access_token"]
+            # client_secret_basic: credentials in Authorization header
+            credentials = urllib.parse.quote(self.client_id, safe="") + ":" + urllib.parse.quote(self.client_secret or "", safe="")
+            import base64
+            auth_header = "Basic " + base64.b64encode(credentials.encode()).decode()
+            req = urllib.request.Request(
+                self.keycloak_url,
+                data=urllib.parse.urlencode(params).encode(),
+                headers={"Authorization": auth_header, "Content-Type": "application/x-www-form-urlencoded"},
+            )
+            with urllib.request.urlopen(req) as r:
+                return json.load(r)["access_token"]
+        else:
+            data = urllib.parse.urlencode(
+                {
+                    "grant_type": "password",
+                    "client_id": self.client_id,
+                    "username": self.username,
+                    "password": self.password,
+                    "scope": self.oidc_scope,
+                }
+            ).encode()
+            with urllib.request.urlopen(self.keycloak_url, data) as r:
+                return json.load(r)["access_token"]
 
     def _assume_role(self, jwt_token: str) -> dict:
         sts = boto3.client(

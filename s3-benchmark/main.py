@@ -427,6 +427,8 @@ def main() -> None:
             client_id=args.oidc_client_id,
             role_arn=args.role_arn,
         )
+    else:
+        sts_auth = STSAuth.from_env()
 
     endpoint_url = (
         args.endpoint_url
