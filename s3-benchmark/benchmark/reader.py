@@ -34,6 +34,20 @@ def read_big_file(config: S3Config, key: str) -> dict:
     return {"key": key, "size_bytes": len(data), "elapsed_s": elapsed}
 
 
+def list_files(config: S3Config, prefix: str) -> dict:
+    """List all objects under a prefix (handles pagination) and return timing + count."""
+    client = _make_client(config)
+    paginator = client.get_paginator("list_objects_v2")
+
+    count = 0
+    start = time.perf_counter()
+    for page in paginator.paginate(Bucket=config.bucket, Prefix=prefix):
+        count += len(page.get("Contents", []))
+    elapsed = time.perf_counter() - start
+
+    return {"prefix": prefix, "count": count, "elapsed_s": elapsed}
+
+
 def read_small_files(
     config: S3Config,
     keys: list[str],
