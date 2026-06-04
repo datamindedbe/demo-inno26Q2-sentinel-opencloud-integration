@@ -38,6 +38,10 @@ import statistics
 import time
 import uuid
 
+from dotenv import load_dotenv
+
+load_dotenv()  # load .env for local dev; never overrides already-set env vars
+
 from rich import box
 from rich.console import Console
 from rich.panel import Panel

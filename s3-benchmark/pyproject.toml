@@ -9,6 +9,7 @@ dependencies = [
     "psutil>=5.9",
     "dill>=0.3",
     "rich>=15.0.0",
+    "python-dotenv>=1.2.2",
 ]
 
 [project.scripts]
