@@ -5,6 +5,10 @@ import time
 from canal.flow import map_async
 from benchmark.config import S3Config
 
+# Size of each chunk pulled from the streaming body. Peak memory for a big-file
+# read is one chunk, independent of total object size.
+CHUNK_SIZE = 8 * 1024 * 1024
+
 
 def _make_client(config: S3Config):
     """Create a boto3 S3 client. Always call this inside the worker process."""
@@ -12,15 +16,21 @@ def _make_client(config: S3Config):
 
 
 def read_big_file(config: S3Config, key: str) -> dict:
-    """Download a single large file and return timing + size info."""
+    """Stream-download a single large file and return timing + size info.
+
+    The body is drained in fixed-size chunks and only counted, so memory stays
+    bounded regardless of object size.
+    """
     client = _make_client(config)
 
     start = time.perf_counter()
-    response = client.get_object(Bucket=config.bucket, Key=key)
-    data = response["Body"].read()
+    body = client.get_object(Bucket=config.bucket, Key=key)["Body"]
+    size_bytes = 0
+    while chunk := body.read(CHUNK_SIZE):
+        size_bytes += len(chunk)
     elapsed = time.perf_counter() - start
 
-    return {"key": key, "size_bytes": len(data), "elapsed_s": elapsed}
+    return {"key": key, "size_bytes": size_bytes, "elapsed_s": elapsed}
 
 
 def list_files(config: S3Config, prefix: str) -> dict:
