@@ -8,3 +8,7 @@ module "s3sentinel" {
   backend_secret_key = var.s3sentinel_backend_secret_key
   jwt_audience       = module.zitadel_apps.s3sentinel_project_id
 }
+
+module "opa" {
+  source = "../../modules/opa"
+}
