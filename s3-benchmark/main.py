@@ -6,10 +6,14 @@ Usage:
                           [--big-file-size-mb MB] [--small-file-count N]
                           [--processes N]
 
-All flags can also be set via environment variables (CLI takes priority):
+Standard AWS / localstack auth (env vars, IAM roles):
     S3_ENDPOINT_URL, S3_BUCKET, AWS_DEFAULT_REGION,
-    BIG_FILE_SIZE_MB, SMALL_FILE_COUNT, PROCESSES
-    AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY  (standard boto3 / K8s Secret keys)
+    AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+
+STS / OIDC proxy auth (e.g. s3sentinel reverse proxy):
+    KEYCLOAK_URL, STS_ENDPOINT_URL, OIDC_USERNAME, OIDC_PASSWORD,
+    OIDC_CLIENT_ID, ROLE_ARN
+    (all can also be passed as CLI flags — see --help)
 
 LocalStack:
     docker compose up -d && uv run python main.py
@@ -17,6 +21,13 @@ LocalStack:
 Real AWS S3:
     AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... S3_BUCKET=my-bucket \\
         uv run python main.py --big-file-size-mb 100 --small-file-count 1000
+
+S3 proxy with STS auth:
+    uv run python main.py \\
+        --endpoint-url http://proxy:8080 \\
+        --sts-endpoint http://sts:8090 \\
+        --keycloak-url http://keycloak:8180/realms/s3sentinel/protocol/openid-connect/token \\
+        --oidc-username admin --oidc-password admin123
 """
 
 from __future__ import annotations
@@ -33,7 +44,7 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
 
-from benchmark.config import S3Config
+from benchmark.config import S3Config, STSAuth
 from benchmark.deleter import delete_file, delete_files
 from benchmark.reader import list_files, read_big_file, read_small_files
 from benchmark.writer import write_big_file, write_small_files
@@ -295,15 +306,60 @@ def main() -> None:
                         default=int(os.getenv("PROCESSES", "2")),
                         metavar="N",
                         help="Parallel workers for small-file operations (env: PROCESSES).")
+
+    sts = parser.add_argument_group(
+        "STS / OIDC auth",
+        "Use when the S3 endpoint is a proxy that requires JWT session tokens. "
+        "All args also readable from env vars.",
+    )
+    sts.add_argument("--keycloak-url",
+                     default=os.getenv("KEYCLOAK_URL"),
+                     help="Keycloak token endpoint (env: KEYCLOAK_URL).")
+    sts.add_argument("--sts-endpoint",
+                     default=os.getenv("STS_ENDPOINT_URL"),
+                     help="STS endpoint for AssumeRoleWithWebIdentity (env: STS_ENDPOINT_URL).")
+    sts.add_argument("--oidc-username",
+                     default=os.getenv("OIDC_USERNAME"),
+                     help="OIDC username (env: OIDC_USERNAME).")
+    sts.add_argument("--oidc-password",
+                     default=os.getenv("OIDC_PASSWORD"),
+                     help="OIDC password (env: OIDC_PASSWORD).")
+    sts.add_argument("--oidc-client-id",
+                     default=os.getenv("OIDC_CLIENT_ID", "s3sentinel"),
+                     help="OIDC client ID (env: OIDC_CLIENT_ID).")
+    sts.add_argument("--role-arn",
+                     default=os.getenv("ROLE_ARN", "arn:aws:iam::000000000000:role/s3sentinel"),
+                     help="Role ARN for AssumeRoleWithWebIdentity (env: ROLE_ARN).")
+
     args = parser.parse_args()
 
-    config = S3Config(
-        bucket=args.bucket,
-        region=args.region,
-        # Only override endpoint_url when explicitly passed via CLI;
-        # otherwise S3Config reads S3_ENDPOINT_URL from the environment.
-        **({"endpoint_url": args.endpoint_url} if args.endpoint_url else {}),
-    )
+    sts_auth = None
+    if args.keycloak_url and args.sts_endpoint and args.oidc_username and args.oidc_password:
+        sts_auth = STSAuth(
+            keycloak_url=args.keycloak_url,
+            sts_endpoint=args.sts_endpoint,
+            username=args.oidc_username,
+            password=args.oidc_password,
+            client_id=args.oidc_client_id,
+            role_arn=args.role_arn,
+        )
+
+    endpoint_url = args.endpoint_url or os.getenv("S3_ENDPOINT_URL") or os.getenv("LOCALSTACK_ENDPOINT")
+
+    if sts_auth:
+        console.print("[dim]Resolving STS credentials via Keycloak…[/dim]")
+        config = S3Config.from_sts(
+            bucket=args.bucket,
+            endpoint_url=endpoint_url,
+            region=args.region,
+            sts_auth=sts_auth,
+        )
+    else:
+        config = S3Config(
+            bucket=args.bucket,
+            region=args.region,
+            **({"endpoint_url": endpoint_url} if endpoint_url else {}),
+        )
     run(
         config,
         big_file_size_mb=args.big_file_size_mb,
