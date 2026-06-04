@@ -28,7 +28,7 @@ spec:
 
             # STS endpoint (in-cluster admin port)
             - name: STS_ENDPOINT_URL
-              value: "http://s3sentinel.services.svc.cluster.local:9090"
+              value: "http://s3sentinel.services.svc.cluster.local:8090"
 
             # ZITADEL OIDC — client_credentials grant (external URL so JWT issuer matches)
             - name: KEYCLOAK_URL

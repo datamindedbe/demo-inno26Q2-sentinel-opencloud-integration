@@ -104,6 +104,13 @@ class STSAuth:
                 return json.load(r)["access_token"]
 
     def _assume_role(self, jwt_token: str) -> dict:
+        # Set DEBUG_STS=1 to dump the full STS request/response (incl. bodies)
+        # to stdout — useful for seeing why a proxy rejects the web-identity call.
+        if os.getenv("DEBUG_STS"):
+            import logging
+
+            boto3.set_stream_logger("botocore", logging.DEBUG)
+
         sts = boto3.client(
             "sts",
             endpoint_url=self.sts_endpoint,
@@ -111,11 +118,22 @@ class STSAuth:
             aws_secret_access_key="placeholder",
             region_name="us-east-1",
         )
-        resp = sts.assume_role_with_web_identity(
-            RoleArn=self.role_arn,
-            RoleSessionName=self.role_session_name,
-            WebIdentityToken=jwt_token,
-        )
+
+        from botocore.exceptions import ClientError
+
+        try:
+            resp = sts.assume_role_with_web_identity(
+                RoleArn=self.role_arn,
+                RoleSessionName=self.role_session_name,
+                WebIdentityToken=jwt_token,
+            )
+        except ClientError as e:
+            meta = e.response.get("ResponseMetadata", {})
+            raise RuntimeError(
+                "AssumeRoleWithWebIdentity rejected by "
+                f"{self.sts_endpoint}: HTTP {meta.get('HTTPStatusCode')} "
+                f"error={e.response.get('Error')} headers={meta.get('HTTPHeaders')}"
+            ) from e
         return resp["Credentials"]
 
 
