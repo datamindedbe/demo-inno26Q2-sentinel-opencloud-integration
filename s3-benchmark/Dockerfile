@@ -1,16 +1,25 @@
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 WORKDIR /app
 
-# Copy project metadata first so dependency installation is cached independently of source changes.
-COPY pyproject.toml ./
+# Install dependencies from lockfile — source changes won't bust this layer.
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
 
-# Install dependencies (no editable install — source copied next).
-RUN uv pip install --system boto3 psutil dill
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/.venv /app/.venv
 
 COPY canal/ canal/
 COPY benchmark/ benchmark/
+COPY main.py ./
 
-CMD ["python", "-m", "benchmark"]
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH=/app
+
+ENTRYPOINT ["python", "main.py"]

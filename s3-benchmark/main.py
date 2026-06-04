@@ -1,14 +1,22 @@
 """
-Standalone benchmark script — runs four S3 scenarios and prints a results table.
+Standalone benchmark script — runs six S3 scenarios and prints a results table.
 
 Usage:
     uv run python main.py [--endpoint-url URL] [--bucket NAME]
                           [--big-file-size-mb MB] [--small-file-count N]
                           [--processes N]
 
-LocalStack (default):
-    docker compose up -d
-    uv run python main.py
+All flags can also be set via environment variables (CLI takes priority):
+    S3_ENDPOINT_URL, S3_BUCKET, AWS_DEFAULT_REGION,
+    BIG_FILE_SIZE_MB, SMALL_FILE_COUNT, PROCESSES
+    AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY  (standard boto3 / K8s Secret keys)
+
+LocalStack:
+    docker compose up -d && uv run python main.py
+
+Real AWS S3:
+    AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... S3_BUCKET=my-bucket \\
+        uv run python main.py --big-file-size-mb 100 --small-file-count 1000
 """
 
 from __future__ import annotations
@@ -19,8 +27,6 @@ import statistics
 import time
 import uuid
 
-import boto3
-from botocore.config import Config
 from rich import box
 from rich.console import Console
 from rich.panel import Panel
@@ -32,7 +38,6 @@ from benchmark.deleter import delete_file, delete_files
 from benchmark.reader import list_files, read_big_file, read_small_files
 from benchmark.writer import write_big_file, write_small_files
 
-ENDPOINT_URL = os.getenv("LOCALSTACK_ENDPOINT", "http://localhost:4566")
 BIG_FILE_KEY = "benchmark/big_file"
 SMALL_PREFIX = "benchmark/small"
 
@@ -40,14 +45,7 @@ console = Console()
 
 
 def _make_client(config: S3Config):
-    return boto3.client(
-        "s3",
-        endpoint_url=config.endpoint_url,
-        region_name=config.region,
-        aws_access_key_id=config.aws_access_key_id,
-        aws_secret_access_key=config.aws_secret_access_key,
-        config=Config(s3={"addressing_style": "path"}),
-    )
+    return config.make_client()
 
 
 def _ensure_bucket(client, bucket: str) -> None:
@@ -269,41 +267,42 @@ def run(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="S3 benchmark")
-    parser.add_argument("--endpoint-url", default=ENDPOINT_URL)
-    parser.add_argument(
-        "--bucket",
-        default=f"benchmark-{uuid.uuid4().hex[:8]}",
-        help="Bucket name (created if absent). Defaults to a random name.",
+    parser = argparse.ArgumentParser(
+        description="S3 benchmark",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--region", default="us-east-1")
-    parser.add_argument(
-        "--big-file-size-mb",
-        type=int,
-        default=1,
-        metavar="MB",
-        help="Size of the big file to write and read (default: 1)",
-    )
-    parser.add_argument(
-        "--small-file-count",
-        type=int,
-        default=5,
-        metavar="N",
-        help="Number of small files (1 KB each) to write and read (default: 5)",
-    )
-    parser.add_argument(
-        "--processes",
-        type=int,
-        default=2,
-        metavar="N",
-        help="Number of parallel workers for small-file operations (default: 2)",
-    )
+    parser.add_argument("--endpoint-url",
+                        default=None,
+                        help="S3 endpoint URL (env: S3_ENDPOINT_URL). Omit for real AWS S3.")
+    parser.add_argument("--bucket",
+                        default=os.getenv("S3_BUCKET", f"benchmark-{uuid.uuid4().hex[:8]}"),
+                        help="Bucket name — created if absent (env: S3_BUCKET).")
+    parser.add_argument("--region",
+                        default=os.getenv("AWS_DEFAULT_REGION", "us-east-1"),
+                        help="AWS region (env: AWS_DEFAULT_REGION).")
+    parser.add_argument("--big-file-size-mb",
+                        type=int,
+                        default=int(os.getenv("BIG_FILE_SIZE_MB", "1")),
+                        metavar="MB",
+                        help="Size of the big file (env: BIG_FILE_SIZE_MB).")
+    parser.add_argument("--small-file-count",
+                        type=int,
+                        default=int(os.getenv("SMALL_FILE_COUNT", "5")),
+                        metavar="N",
+                        help="Number of 1 KB small files (env: SMALL_FILE_COUNT).")
+    parser.add_argument("--processes",
+                        type=int,
+                        default=int(os.getenv("PROCESSES", "2")),
+                        metavar="N",
+                        help="Parallel workers for small-file operations (env: PROCESSES).")
     args = parser.parse_args()
 
     config = S3Config(
-        endpoint_url=args.endpoint_url,
         bucket=args.bucket,
         region=args.region,
+        # Only override endpoint_url when explicitly passed via CLI;
+        # otherwise S3Config reads S3_ENDPOINT_URL from the environment.
+        **({"endpoint_url": args.endpoint_url} if args.endpoint_url else {}),
     )
     run(
         config,

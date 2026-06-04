@@ -12,3 +12,14 @@ services:
       timeout: 5s
       retries: 20
       start_period: 10s
+
+  benchmark:
+    build: .
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      S3_ENDPOINT_URL: http://localstack:4566
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-east-1

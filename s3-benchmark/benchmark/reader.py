@@ -1,10 +1,6 @@
 from __future__ import annotations
 
 import time
-from typing import Iterator
-
-import boto3
-from botocore.config import Config
 
 from canal.flow import map_async
 from benchmark.config import S3Config
@@ -12,14 +8,7 @@ from benchmark.config import S3Config
 
 def _make_client(config: S3Config):
     """Create a boto3 S3 client. Always call this inside the worker process."""
-    return boto3.client(
-        "s3",
-        endpoint_url=config.endpoint_url,
-        region_name=config.region,
-        aws_access_key_id=config.aws_access_key_id,
-        aws_secret_access_key=config.aws_secret_access_key,
-        config=Config(s3={"addressing_style": "path"}),
-    )
+    return config.make_client()
 
 
 def read_big_file(config: S3Config, key: str) -> dict:
