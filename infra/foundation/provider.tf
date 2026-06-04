@@ -31,5 +31,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes_config_path = local_sensitive_file.kubeconfig.filename
+  kubernetes {
+    config_path = local_sensitive_file.kubeconfig.filename
+  }
 }
