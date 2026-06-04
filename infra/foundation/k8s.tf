@@ -8,6 +8,8 @@ resource "upcloud_kubernetes_cluster" "this" {
   storage_encryption      = "data-at-rest"
   upgrade_strategy_type   = "manual"
 
+  depends_on = [upcloud_gateway.gw]
+
   labels = {
     managed_by = "terraform"
     project    = var.resource_prefix
