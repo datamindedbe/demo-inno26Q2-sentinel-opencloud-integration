@@ -120,9 +120,17 @@ class S3Config:
         and virtual-hosted style for real AWS S3.
         """
         addressing = "path" if self.endpoint_url else "auto"
+        s3_config: dict = {"addressing_style": addressing}
+        extra: dict = {}
+        if self.endpoint_url:
+            # S3-compatible endpoints (UpCloud, localstack, MinIO) don't support
+            # boto3's default payload signing / checksum behaviour; disable both.
+            s3_config["payload_signing_enabled"] = False
+            extra["request_checksum_calculation"] = "when_required"
+            extra["response_checksum_validation"] = "when_required"
         kwargs: dict = dict(
             region_name=self.region,
-            config=Config(s3={"addressing_style": addressing}),
+            config=Config(s3=s3_config, **extra),
         )
         if self.endpoint_url:
             kwargs["endpoint_url"] = self.endpoint_url
