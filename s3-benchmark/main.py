@@ -201,8 +201,12 @@ def run(
     _ensure_bucket(client, config.bucket)
     console.print()
 
-    write_big_result = write_small_results = read_big_result = read_small_results = list_result = delete_big_result = delete_small_results = None
-    write_big_wall = write_small_wall = read_big_wall = read_small_wall = list_wall = delete_big_wall = delete_small_wall = 0.0
+    write_big_result = write_small_results = read_big_result = read_small_results = (
+        list_result
+    ) = delete_big_result = delete_small_results = None
+    write_big_wall = write_small_wall = read_big_wall = read_small_wall = list_wall = (
+        delete_big_wall
+    ) = delete_small_wall = 0.0
 
     with Progress(
         SpinnerColumn(),
@@ -211,72 +215,117 @@ def run(
         console=console,
         transient=False,
     ) as progress:
-
         t = progress.add_task(f"Writing big file  ({big_file_size_mb} MB)…", total=None)
         t0 = time.perf_counter()
-        write_big_result = write_big_file(config, BIG_FILE_KEY, size_mb=big_file_size_mb)
+        write_big_result = write_big_file(
+            config, BIG_FILE_KEY, size_mb=big_file_size_mb
+        )
         write_big_wall = time.perf_counter() - t0
-        progress.update(t, total=1, completed=1,
-                        description=f"[green]✓[/green] Write big file  ({big_file_size_mb} MB)")
+        progress.update(
+            t,
+            total=1,
+            completed=1,
+            description=f"[green]✓[/green] Write big file  ({big_file_size_mb} MB)",
+        )
 
-        t = progress.add_task(f"Writing {small_file_count} small files ({processes} workers)…", total=None)
+        t = progress.add_task(
+            f"Writing {small_file_count} small files ({processes} workers)…", total=None
+        )
         t0 = time.perf_counter()
         write_small_results = write_small_files(
             config, SMALL_PREFIX, count=small_file_count, size_kb=1, processes=processes
         )
         write_small_wall = time.perf_counter() - t0
-        progress.update(t, total=1, completed=1,
-                        description=f"[green]✓[/green] Write {small_file_count} small files")
+        progress.update(
+            t,
+            total=1,
+            completed=1,
+            description=f"[green]✓[/green] Write {small_file_count} small files",
+        )
 
         t = progress.add_task(f"Reading big file  ({big_file_size_mb} MB)…", total=None)
         t0 = time.perf_counter()
         read_big_result = read_big_file(config, BIG_FILE_KEY)
         read_big_wall = time.perf_counter() - t0
-        progress.update(t, total=1, completed=1,
-                        description=f"[green]✓[/green] Read big file  ({big_file_size_mb} MB)")
+        progress.update(
+            t,
+            total=1,
+            completed=1,
+            description=f"[green]✓[/green] Read big file  ({big_file_size_mb} MB)",
+        )
 
-        t = progress.add_task(f"Reading {small_file_count} small files ({processes} workers)…", total=None)
+        t = progress.add_task(
+            f"Reading {small_file_count} small files ({processes} workers)…", total=None
+        )
         t0 = time.perf_counter()
         read_small_results = read_small_files(
             config, [r["key"] for r in write_small_results], processes=processes
         )
         read_small_wall = time.perf_counter() - t0
-        progress.update(t, total=1, completed=1,
-                        description=f"[green]✓[/green] Read {small_file_count} small files")
+        progress.update(
+            t,
+            total=1,
+            completed=1,
+            description=f"[green]✓[/green] Read {small_file_count} small files",
+        )
 
         t = progress.add_task(f"Listing files under {SMALL_PREFIX}/…", total=None)
         t0 = time.perf_counter()
         list_result = list_files(config, SMALL_PREFIX)
         list_wall = time.perf_counter() - t0
-        progress.update(t, total=1, completed=1,
-                        description=f"[green]✓[/green] List files ({list_result['count']} objects)")
+        progress.update(
+            t,
+            total=1,
+            completed=1,
+            description=f"[green]✓[/green] List files ({list_result['count']} objects)",
+        )
 
-        t = progress.add_task(f"Deleting big file  ({big_file_size_mb} MB)…", total=None)
+        t = progress.add_task(
+            f"Deleting big file  ({big_file_size_mb} MB)…", total=None
+        )
         t0 = time.perf_counter()
         delete_big_result = delete_file(config, BIG_FILE_KEY)
         delete_big_wall = time.perf_counter() - t0
-        progress.update(t, total=1, completed=1,
-                        description=f"[green]✓[/green] Delete big file  ({big_file_size_mb} MB)")
+        progress.update(
+            t,
+            total=1,
+            completed=1,
+            description=f"[green]✓[/green] Delete big file  ({big_file_size_mb} MB)",
+        )
 
-        t = progress.add_task(f"Deleting {small_file_count} small files ({processes} workers)…", total=None)
+        t = progress.add_task(
+            f"Deleting {small_file_count} small files ({processes} workers)…",
+            total=None,
+        )
         t0 = time.perf_counter()
         delete_small_results = delete_files(
             config, [r["key"] for r in write_small_results], processes=processes
         )
         delete_small_wall = time.perf_counter() - t0
-        progress.update(t, total=1, completed=1,
-                        description=f"[green]✓[/green] Delete {small_file_count} small files")
+        progress.update(
+            t,
+            total=1,
+            completed=1,
+            description=f"[green]✓[/green] Delete {small_file_count} small files",
+        )
 
     console.print()
     console.print(
         _results_table(
-            write_big_result, write_big_wall,
-            write_small_results, write_small_wall,
-            read_big_result, read_big_wall,
-            read_small_results, read_small_wall,
-            list_result, list_wall,
-            delete_big_result, delete_big_wall,
-            delete_small_results, delete_small_wall,
+            write_big_result,
+            write_big_wall,
+            write_small_results,
+            write_small_wall,
+            read_big_result,
+            read_big_wall,
+            read_small_results,
+            read_small_wall,
+            list_result,
+            list_wall,
+            delete_big_result,
+            delete_big_wall,
+            delete_small_results,
+            delete_small_wall,
             big_file_size_mb,
             small_file_count,
         )
@@ -288,59 +337,88 @@ def main() -> None:
         description="S3 benchmark",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--endpoint-url",
-                        default=None,
-                        help="S3 endpoint URL (env: S3_ENDPOINT_URL). Omit for real AWS S3.")
-    parser.add_argument("--bucket",
-                        default=os.getenv("S3_BUCKET", f"benchmark-{uuid.uuid4().hex[:8]}"),
-                        help="Bucket name — created if absent (env: S3_BUCKET).")
-    parser.add_argument("--region",
-                        default=os.getenv("AWS_DEFAULT_REGION", "us-east-1"),
-                        help="AWS region (env: AWS_DEFAULT_REGION).")
-    parser.add_argument("--big-file-size-mb",
-                        type=int,
-                        default=int(os.getenv("BIG_FILE_SIZE_MB", "1")),
-                        metavar="MB",
-                        help="Size of the big file (env: BIG_FILE_SIZE_MB).")
-    parser.add_argument("--small-file-count",
-                        type=int,
-                        default=int(os.getenv("SMALL_FILE_COUNT", "5")),
-                        metavar="N",
-                        help="Number of 1 KB small files (env: SMALL_FILE_COUNT).")
-    parser.add_argument("--processes",
-                        type=int,
-                        default=int(os.getenv("PROCESSES", "2")),
-                        metavar="N",
-                        help="Parallel workers for small-file operations (env: PROCESSES).")
+    parser.add_argument(
+        "--endpoint-url",
+        default=None,
+        help="S3 endpoint URL (env: S3_ENDPOINT_URL). Omit for real AWS S3.",
+    )
+    parser.add_argument(
+        "--bucket",
+        default=os.getenv("S3_BUCKET", f"benchmark-{uuid.uuid4().hex[:8]}"),
+        help="Bucket name — created if absent (env: S3_BUCKET).",
+    )
+    parser.add_argument(
+        "--region",
+        default=os.getenv("AWS_DEFAULT_REGION", "us-east-1"),
+        help="AWS region (env: AWS_DEFAULT_REGION).",
+    )
+    parser.add_argument(
+        "--big-file-size-mb",
+        type=int,
+        default=int(os.getenv("BIG_FILE_SIZE_MB", "1")),
+        metavar="MB",
+        help="Size of the big file (env: BIG_FILE_SIZE_MB).",
+    )
+    parser.add_argument(
+        "--small-file-count",
+        type=int,
+        default=int(os.getenv("SMALL_FILE_COUNT", "5")),
+        metavar="N",
+        help="Number of 1 KB small files (env: SMALL_FILE_COUNT).",
+    )
+    parser.add_argument(
+        "--processes",
+        type=int,
+        default=int(os.getenv("PROCESSES", "2")),
+        metavar="N",
+        help="Parallel workers for small-file operations (env: PROCESSES).",
+    )
 
     sts = parser.add_argument_group(
         "STS / OIDC auth",
         "Use when the S3 endpoint is a proxy that requires JWT session tokens. "
         "All args also readable from env vars.",
     )
-    sts.add_argument("--keycloak-url",
-                     default=os.getenv("KEYCLOAK_URL"),
-                     help="Keycloak token endpoint (env: KEYCLOAK_URL).")
-    sts.add_argument("--sts-endpoint",
-                     default=os.getenv("STS_ENDPOINT_URL"),
-                     help="STS endpoint for AssumeRoleWithWebIdentity (env: STS_ENDPOINT_URL).")
-    sts.add_argument("--oidc-username",
-                     default=os.getenv("OIDC_USERNAME"),
-                     help="OIDC username (env: OIDC_USERNAME).")
-    sts.add_argument("--oidc-password",
-                     default=os.getenv("OIDC_PASSWORD"),
-                     help="OIDC password (env: OIDC_PASSWORD).")
-    sts.add_argument("--oidc-client-id",
-                     default=os.getenv("OIDC_CLIENT_ID", "s3sentinel"),
-                     help="OIDC client ID (env: OIDC_CLIENT_ID).")
-    sts.add_argument("--role-arn",
-                     default=os.getenv("ROLE_ARN", "arn:aws:iam::000000000000:role/s3sentinel"),
-                     help="Role ARN for AssumeRoleWithWebIdentity (env: ROLE_ARN).")
+    sts.add_argument(
+        "--keycloak-url",
+        default=os.getenv("KEYCLOAK_URL"),
+        help="Keycloak token endpoint (env: KEYCLOAK_URL).",
+    )
+    sts.add_argument(
+        "--sts-endpoint",
+        default=os.getenv("STS_ENDPOINT_URL"),
+        help="STS endpoint for AssumeRoleWithWebIdentity (env: STS_ENDPOINT_URL).",
+    )
+    sts.add_argument(
+        "--oidc-username",
+        default=os.getenv("OIDC_USERNAME"),
+        help="OIDC username (env: OIDC_USERNAME).",
+    )
+    sts.add_argument(
+        "--oidc-password",
+        default=os.getenv("OIDC_PASSWORD"),
+        help="OIDC password (env: OIDC_PASSWORD).",
+    )
+    sts.add_argument(
+        "--oidc-client-id",
+        default=os.getenv("OIDC_CLIENT_ID", "s3sentinel"),
+        help="OIDC client ID (env: OIDC_CLIENT_ID).",
+    )
+    sts.add_argument(
+        "--role-arn",
+        default=os.getenv("ROLE_ARN", "arn:aws:iam::000000000000:role/s3sentinel"),
+        help="Role ARN for AssumeRoleWithWebIdentity (env: ROLE_ARN).",
+    )
 
     args = parser.parse_args()
 
     sts_auth = None
-    if args.keycloak_url and args.sts_endpoint and args.oidc_username and args.oidc_password:
+    if (
+        args.keycloak_url
+        and args.sts_endpoint
+        and args.oidc_username
+        and args.oidc_password
+    ):
         sts_auth = STSAuth(
             keycloak_url=args.keycloak_url,
             sts_endpoint=args.sts_endpoint,
@@ -350,7 +428,11 @@ def main() -> None:
             role_arn=args.role_arn,
         )
 
-    endpoint_url = args.endpoint_url or os.getenv("S3_ENDPOINT_URL") or os.getenv("LOCALSTACK_ENDPOINT")
+    endpoint_url = (
+        args.endpoint_url
+        or os.getenv("S3_ENDPOINT_URL")
+        or os.getenv("LOCALSTACK_ENDPOINT")
+    )
 
     if sts_auth:
         console.print("[dim]Resolving STS credentials via Keycloak…[/dim]")
