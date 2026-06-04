@@ -42,4 +42,5 @@ terraform.rc
 
 # Python bytecode
 __pycache__/
-*.py[cod]
+
+*kubeconfig.yml

@@ -11,38 +11,24 @@ spec:
       containers:
         - name: s3-benchmark
           image: ghcr.io/datamindedbe/demo-inno26q2-sentinel-opencloud-integration/s3-benchmark:latest
+          # Values below are templated by the Makefile (sed) at deploy time.
+          # Deploy via `make run_without` / `make run_with`, not raw kubectl apply.
           args:
-            - "--big-file-size-mb=100"
-            - "--small-file-count=100"
-            - "--processes=4"
+            - "--big-file-size-mb=@@BIG_FILE_SIZE_MB@@"
+            - "--small-file-count=@@SMALL_FILE_COUNT@@"
+            - "--processes=@@PROCESSES@@"
           env:
             # S3 proxy endpoint (the reverse proxy, not real S3)
             - name: S3_ENDPOINT_URL
-              value: "https://<proxy-host>"
-            - name: S3_BUCKET
-              value: "<your-bucket-name>"
+              value: "https://fsabm.upcloudobjects.com"
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
-
-            # STS / OIDC auth — remove this block for standard AWS IAM auth
-            - name: KEYCLOAK_URL
-              value: "https://<keycloak-host>/realms/s3sentinel/protocol/openid-connect/token"
-            - name: STS_ENDPOINT_URL
-              value: "https://<sts-host>"
-            - name: OIDC_CLIENT_ID
-              value: "s3sentinel"
-            - name: ROLE_ARN
-              value: "arn:aws:iam::000000000000:role/s3sentinel"
-            - name: OIDC_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: s3-benchmark-oidc
-                  key: username
-            - name: OIDC_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: s3-benchmark-oidc
-                  key: password
+            - name: AWS_ACCESS_KEY_ID
+              value: AKIA1DFD3F8B0359A789
+            - name: AWS_SECRET_ACCESS_KEY
+              value: wp6gqLfUZm9h772hMIQs70IbggTrYeAo/AZrIwzg
+            - name: S3_BUCKET
+              value: "benchmark"
           resources:
             requests:
               cpu: "1"
