@@ -13,20 +13,12 @@ terraform {
       source  = "hashicorp/helm"
       version = "2.16.1"
     }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.38.0"
-    }
   }
   required_version = "1.11.4"
 }
 
-provider "kubernetes" {
-  config_path = "../.kubeconfig.yml"
-}
-
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = "../.kubeconfig.yml"
   }
 }
