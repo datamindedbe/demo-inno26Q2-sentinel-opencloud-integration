@@ -105,7 +105,7 @@ Before we can setup the remainder of our stack, we need to create a service user
 This will allow us to configure authentication (using oauth) for every application on our stack.
 
 - Go to the service users tab and create a new service user. ![Create service user](CreateZitadelServiceUser.png)
-- Make sure to assign the service user the `Org owner` and `Iam owner` roles.
+- Make sure to assign the service user the `Org owner` and `Iam owner` roles. This is done via `users`-> go to the `default admin`-> `memberships` -> `edit` button next to the role -> `new` -> select the new user.
 - Create a key for the service user. Zitadel will create the json key that you need for the OpenTofu provider. ![Create Key Service user](CreateKeyForZitadelServiceUser.png)
 - Put the key in the `infra/apps` directory as a `token.json` file.
 - Look up the organization ID in the Zitadel UI, you will need it in the next step.
