@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/nclaeys/s3sentinel
+  repository: ghcr.io/datamindedbe/demo-inno26q2-sentinel-opencloud-integration/s3sentinel
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "latest"
 
 serviceAccount:
   create: true
