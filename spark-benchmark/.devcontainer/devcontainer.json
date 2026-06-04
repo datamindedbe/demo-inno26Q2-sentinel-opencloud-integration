@@ -1,0 +1,21 @@
+{
+	"name": "PySpark TPC-DS",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance"
+			]
+		}
+	},
+	"postCreateCommand": "curl -s https://static.conveyordata.com/cli-install/install.sh | bash",
+	"postStartCommand": "curl -s https://static.conveyordata.com/cli-install/update.sh | bash",
+	"remoteUser": "vscode",
+	"features": {
+		"docker-in-docker": "latest",
+		"aws-cli": "latest"
+	}
+}

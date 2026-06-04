@@ -1,0 +1,13 @@
+docker:
+    path: .
+id: d8a5e06d-3167-4c32-8198-d14082dbf41e
+ide:
+    filename: ide.yaml
+name: demo-inno26q2-sentinel-opencloud-integration
+resources:
+    path: resources
+template: ""
+version: "0.3"
+workflows:
+    path: dags
+    version: "2"
