@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: s3-benchmark-sentinel
+  namespace: default
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: s3-benchmark
+          image: ghcr.io/datamindedbe/demo-inno26q2-sentinel-opencloud-integration/s3-benchmark:latest
+          # Values below are templated by the Makefile (sed) at deploy time.
+          # Deploy via `make run_without` / `make run_with`, not raw kubectl apply.
+          args:
+            - "--big-file-size-mb=@@BIG_FILE_SIZE_MB@@"
+            - "--small-file-count=@@SMALL_FILE_COUNT@@"
+            - "--processes=@@PROCESSES@@"
+          env:
+            # S3 proxy (in-cluster)
+            - name: S3_ENDPOINT_URL
+              value: "http://s3sentinel.services.svc.cluster.local:8080"
+            - name: S3_BUCKET
+              value: "dp-data-bucket"
+            - name: AWS_DEFAULT_REGION
+              value: "europe-1"
+
+            # STS endpoint (in-cluster admin port)
+            - name: STS_ENDPOINT_URL
+              value: "http://s3sentinel.services.svc.cluster.local:9090"
+
+            # ZITADEL OIDC — client_credentials grant (external URL so JWT issuer matches)
+            - name: KEYCLOAK_URL
+              value: "https://zitadel.sentinel.playground.dataminded.cloud/oauth/v2/token"
+            - name: OIDC_GRANT_TYPE
+              value: "client_credentials"
+            - name: OIDC_CLIENT_ID
+              value: "s3-benchmark-user-name"
+            - name: OIDC_CLIENT_SECRET
+              value: "58qjEmlWvrhZAOBeqkrk3VVq2pEtFEJOWK4bE2h4vkCelkTSjzZM5xERNdRea7sq"
+            # Scope must include the s3sentinel project audience so the proxy accepts the JWT
+            - name: OIDC_SCOPE
+              value: "openid urn:zitadel:iam:org:project:id:375932491829084258:aud"
+            - name: ROLE_ARN
+              value: "arn:aws:iam::000000000000:role/s3sentinel"
+          resources:
+            requests:
+              cpu: "1"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "1Gi"
+      imagePullSecrets:
+        - name: ghcr-pull-secret
+
+# --- Setup commands (one-time) ---
+#
+# OIDC credentials secret:
+#   kubectl create secret generic s3-benchmark-oidc \
+#     --from-literal=username=admin \
+#     --from-literal=password=admin123
+#
+# GHCR pull secret:
+#   kubectl create secret docker-registry ghcr-pull-secret \
+#     --docker-server=ghcr.io \
+#     --docker-username=WRRB \
+#     --docker-password=$(gh auth token)
