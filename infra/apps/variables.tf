@@ -31,3 +31,16 @@ variable "resource_prefix" {
   default     = "dp-demo-stack"
   description = "A prefix to use for naming resources."
 }
+
+variable "s3sentinel_backend_access_key" {
+  type        = string
+  sensitive   = true
+  description = "Access key for the S3 backend used by s3sentinel."
+}
+
+variable "s3sentinel_backend_secret_key" {
+  type        = string
+  sensitive   = true
+  description = "Secret key for the S3 backend used by s3sentinel."
+}
+

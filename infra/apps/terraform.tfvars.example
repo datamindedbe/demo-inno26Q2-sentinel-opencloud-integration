@@ -2,3 +2,8 @@ storage_bucket_domain_name = "your domain name (ends with upcloudobjects.com)"
 storage_bucket_name = "your storage bucket name"
 host_domain = "your hosted domain name (e.g. demo.yourcompany.com)"
 zitadel_org_id = "your zitadel organization id"
+
+# s3sentinel — S3 proxy with OPA policy enforcement and JWT authentication
+s3sentinel_backend_access_key = "your S3 access key"
+s3sentinel_backend_secret_key = "your S3 secret key"
+# s3sentinel_jwt_audience is derived automatically from the Zitadel project created by the zitadel_apps module
