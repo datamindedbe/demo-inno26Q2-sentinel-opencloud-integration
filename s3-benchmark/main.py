@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import socket
 import statistics
 import time
 import uuid
@@ -188,6 +189,7 @@ def run(
     console.print(
         Panel.fit(
             f"[bold]S3 Benchmark[/bold]\n"
+            f"Host      : [cyan]{socket.gethostname()}[/cyan]\n"
             f"Endpoint  : [cyan]{config.endpoint_url}[/cyan]\n"
             f"Bucket    : [cyan]{config.bucket}[/cyan]\n"
             f"Big file  : [cyan]{big_file_size_mb} MB[/cyan]\n"
