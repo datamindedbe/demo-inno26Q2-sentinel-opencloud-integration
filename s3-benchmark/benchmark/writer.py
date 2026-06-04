@@ -3,8 +3,35 @@ from __future__ import annotations
 import io
 import time
 
+from boto3.s3.transfer import TransferConfig
+
 from benchmark.config import S3Config
 from canal.flow import map_async
+
+# Multipart settings for the streaming upload. Peak memory while uploading is
+# roughly MAX_CONCURRENCY * CHUNK_SIZE, independent of total file size.
+CHUNK_SIZE = 8 * 1024 * 1024
+MAX_CONCURRENCY = 4
+
+
+class _ZeroStream(io.RawIOBase):
+    """Read-only file-like object that yields `total` zero bytes lazily.
+
+    Lets us stream an arbitrarily large upload without ever materialising the
+    whole payload in memory — only one chunk exists at a time.
+    """
+
+    def __init__(self, total: int):
+        self._remaining = total
+
+    def readable(self) -> bool:
+        return True
+
+    def readinto(self, b) -> int:
+        n = min(len(b), self._remaining)
+        b[:n] = bytes(n)
+        self._remaining -= n
+        return n
 
 
 def _make_client(config: S3Config):
@@ -13,12 +40,21 @@ def _make_client(config: S3Config):
 
 
 def write_big_file(config: S3Config, key: str, size_mb: int = 100) -> dict:
-    """Upload a single large file and return timing info."""
+    """Stream-upload a single large file and return timing info.
+
+    Memory stays bounded regardless of `size_mb` because the payload is
+    generated lazily and uploaded as multipart chunks.
+    """
     client = _make_client(config)
-    data = io.BytesIO(b"0" * size_mb * 1024 * 1024)
+    total = size_mb * 1024 * 1024
+    transfer = TransferConfig(
+        multipart_threshold=CHUNK_SIZE,
+        multipart_chunksize=CHUNK_SIZE,
+        max_concurrency=MAX_CONCURRENCY,
+    )
 
     start = time.perf_counter()
-    client.upload_fileobj(data, config.bucket, key)
+    client.upload_fileobj(_ZeroStream(total), config.bucket, key, Config=transfer)
     elapsed = time.perf_counter() - start
 
     return {"key": key, "size_mb": size_mb, "elapsed_s": elapsed}
