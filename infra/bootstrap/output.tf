@@ -2,6 +2,10 @@ output "storage_bucket" {
   value = upcloud_managed_object_storage_bucket.bucket.name
 }
 
+output "app_storage_bucket" {
+  value = upcloud_managed_object_storage_bucket.app_bucket.name
+}
+
 output "s3_endpoint_domain" {
   value = tolist(upcloud_managed_object_storage.this.endpoint)[0].domain_name
 }

@@ -10,7 +10,7 @@ terraform {
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "2.16.1"
+      version = "3.1.2"
     }
     random = {
       source  = "hashicorp/random"
@@ -31,7 +31,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = local_sensitive_file.kubeconfig.filename
   }
 }
