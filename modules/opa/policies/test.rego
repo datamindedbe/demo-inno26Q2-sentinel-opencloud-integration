@@ -28,6 +28,15 @@ allow if {
 }
 
 # ---------------------------------------------------------------------------
+# Resolve principal: map ZITADEL user ID → product name via principals.json.
+# Falls back to the raw principal if no mapping exists (e.g. human users).
+# ---------------------------------------------------------------------------
+
+resolved_principal := name if {
+    name := data.principal_names[input.principal]
+} else := input.principal
+
+# ---------------------------------------------------------------------------
 # Build the resource ARN for the current request
 # ---------------------------------------------------------------------------
 
@@ -62,7 +71,7 @@ request_action := sprintf("s3:%s", [input.action])
 # ---------------------------------------------------------------------------
 
 explicitly_denied if {
-    some policy_name in data.principal_policies[input.principal]
+    some policy_name in data.principal_policies[resolved_principal]
     _stmt_denies(data.policies[policy_name])
 }
 
@@ -83,7 +92,7 @@ explicitly_denied if {
 # ---------------------------------------------------------------------------
 
 explicitly_allowed if {
-    some policy_name in data.principal_policies[input.principal]
+    some policy_name in data.principal_policies[resolved_principal]
     _stmt_allows(data.policies[policy_name])
 }
 
