@@ -8,4 +8,8 @@ data "zitadel_org" "default" {
 resource "zitadel_project" "s3sentinel" {
   name   = "s3sentinel"
   org_id = data.zitadel_org.default.id
+
+  lifecycle {
+    ignore_changes = [has_project_check, project_role_assertion, project_role_check]
+  }
 }
