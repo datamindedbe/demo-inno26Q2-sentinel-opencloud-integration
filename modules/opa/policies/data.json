@@ -4,19 +4,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-0/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-0/private/*",
@@ -29,19 +17,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-2/*",
@@ -57,12 +33,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-2/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-3/*",
@@ -76,19 +47,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-2/*",
@@ -101,12 +60,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-2/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-5/*",
@@ -121,19 +75,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-2/*",
@@ -148,12 +90,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-3/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-4/*"
@@ -165,19 +102,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-4/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-4/private/*",
@@ -186,12 +111,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-6/*",
@@ -205,19 +125,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-2/*",
@@ -229,12 +137,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-3/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-7/*",
@@ -249,19 +152,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-6/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-6/asset-2/*",
@@ -275,12 +166,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-5/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-6/*",
@@ -293,19 +179,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-2/*",
@@ -318,12 +192,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-3/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-1/*"
@@ -335,19 +204,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-8/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-8/asset-2/*",
@@ -361,12 +218,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-6/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-5/*",
@@ -379,19 +231,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-9/private/*",
             "arn:s3sentinel:s3:::dp-data-bucket"
@@ -399,12 +239,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-3/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-1/*",
@@ -418,19 +253,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-2/*",
@@ -451,19 +274,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-2/*",
@@ -479,12 +290,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-2/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-4/*"
@@ -496,19 +302,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-2/*",
@@ -522,12 +316,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-10/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-3/*",
@@ -540,19 +329,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-2/*",
@@ -563,12 +340,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-3/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-5/*"
@@ -580,19 +352,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-14/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-14/asset-2/*",
@@ -604,12 +364,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-8/*"
           ]
@@ -620,19 +375,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-2/*",
@@ -646,12 +389,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-2/*"
@@ -663,19 +401,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-2/*",
@@ -690,12 +416,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-4/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-1/*"
@@ -707,19 +428,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-2/*",
@@ -737,12 +446,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-3/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-5/*"
@@ -754,19 +458,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-18/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-18/asset-2/*",
@@ -776,12 +468,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-2/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-3/*",
@@ -794,19 +481,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-19/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-19/private/*",
@@ -815,12 +490,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-4/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-6/*",
@@ -837,19 +507,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-2/*",
@@ -861,12 +519,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-2/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-3/*"
@@ -878,19 +531,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-21/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-21/asset-2/*",
@@ -901,12 +542,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-2/*"
           ]
@@ -917,19 +553,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-22/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-22/asset-2/*",
@@ -939,12 +563,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-3/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-21/asset-3/*",
@@ -957,19 +576,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-23/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-23/asset-2/*",
@@ -979,12 +586,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-5/*"
           ]
@@ -995,19 +597,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-24/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-24/asset-2/*",
@@ -1017,12 +607,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-2/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-9/*",
@@ -1037,19 +622,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-2/*",
@@ -1060,12 +633,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-6/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-5/*",
@@ -1080,19 +648,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-2/*",
@@ -1104,12 +660,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-4/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-1/*",
@@ -1122,19 +673,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-2/*",
@@ -1151,12 +690,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-2/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-3/*",
@@ -1169,19 +703,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-28/private/*",
             "arn:s3sentinel:s3:::dp-data-bucket"
@@ -1189,12 +711,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-4/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-1/*",
@@ -1207,19 +724,7 @@
       "Statement": [
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:PutObject",
-            "s3:DeleteObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2",
-            "s3:HeadBucket",
-            "s3:CreateMultipartUpload",
-            "s3:UploadPart",
-            "s3:CompleteMultipartUpload",
-            "s3:AbortMultipartUpload"
-          ],
+          "Action": "write",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-29/asset-1/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-29/asset-2/*",
@@ -1232,12 +737,7 @@
         },
         {
           "Effect": "Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:HeadObject",
-            "s3:ListObjects",
-            "s3:ListObjectsV2"
-          ],
+          "Action": "read",
           "Resource": [
             "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-3/*",
             "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-3/*",

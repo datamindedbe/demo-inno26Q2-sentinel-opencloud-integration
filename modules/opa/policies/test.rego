@@ -39,6 +39,21 @@ request_resource := sprintf("arn:s3sentinel:s3:::%s", [input.bucket]) if {
     input.key == ""
 }
 
+# ---------------------------------------------------------------------------
+# Map simplified policy actions ("read"/"write") to S3 action sets
+# ---------------------------------------------------------------------------
+
+read_actions := {
+    "s3:GetObject", "s3:HeadObject",
+    "s3:ListObjects", "s3:ListObjectsV2"
+}
+
+write_actions := read_actions | {
+    "s3:PutObject", "s3:DeleteObject", "s3:HeadBucket",
+    "s3:CreateMultipartUpload", "s3:UploadPart",
+    "s3:CompleteMultipartUpload", "s3:AbortMultipartUpload"
+}
+
 # Normalise action to AWS style (s3:GetObject) for matching
 request_action := sprintf("s3:%s", [input.action])
 
@@ -120,6 +135,8 @@ _action_match(pattern, action) if {
     prefix := trim_suffix(pattern, "*")
     startswith(action, prefix)
 }
+_action_match("read", action)  if { action in read_actions }
+_action_match("write", action) if { action in write_actions }
 
 # ---------------------------------------------------------------------------
 # Resource matching — supports ARN wildcards (arn:s3sentinel:s3:::bucket/prefix/*)
