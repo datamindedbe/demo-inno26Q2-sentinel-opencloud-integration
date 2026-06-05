@@ -20,8 +20,9 @@ logger = logging.getLogger(__name__)
 
 def parse_args():
     parser = argparse.ArgumentParser(description="TPC-DS benchmark")
-    parser.add_argument("--mode", required=True, choices=["gen", "query", "gen-query", "preflight"],
-                        help="Benchmark mode (preflight = connectivity check only)")
+    parser.add_argument("--mode", required=True,
+                        choices=["gen", "query", "gen-query", "preflight", "compare"],
+                        help="Benchmark mode (preflight = connectivity check only, compare = diff results)")
     parser.add_argument("--scale-factor", default="100", type=str,
                         help="TPC-DS scale factor (GB)")
     parser.add_argument("--data-path", required=True,
@@ -36,8 +37,109 @@ def parse_args():
                         help="Number of times to run each query")
     parser.add_argument("--result-path",
                         help="S3 path to write query results and timings")
+    parser.add_argument("--proxy-result-path",
+                        help="S3 path to proxy query results (for compare mode)")
+    parser.add_argument("--direct-result-path",
+                        help="S3 path to direct query results (for compare mode)")
+    parser.add_argument("--sts-endpoint",
+                        help="s3sentinel STS endpoint for AssumeRoleWithWebIdentity")
+    parser.add_argument("--bearer-token",
+                        help="Zitadel PAT to exchange for a signed JWT")
+    parser.add_argument("--zitadel-endpoint",
+                        help="Base URL of the Zitadel instance (for PAT -> JWT exchange)")
+    parser.add_argument("--zitadel-client-id",
+                        help="Zitadel machine-user client_id")
+    parser.add_argument("--zitadel-client-secret",
+                        help="Zitadel machine-user client_secret")
+    parser.add_argument("--zitadel-audience",
+                        help="s3sentinel Zitadel project ID (expected aud claim)")
     args = parser.parse_args()
     return args
+
+
+def get_zitadel_jwt(zitadel_endpoint, client_id, client_secret, audience):
+    """
+    Get a Zitadel JWT via client_credentials grant.
+    The returned id_token is a JWT signed by Zitadel's JWKS, suitable
+    for use as WebIdentityToken with the s3sentinel STS endpoint.
+    """
+    import urllib.request
+    import urllib.parse
+    import json
+
+    scope = f"openid urn:zitadel:iam:org:project:id:{audience}:aud"
+    data = urllib.parse.urlencode({
+        "grant_type": "client_credentials",
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "scope": scope,
+    }).encode()
+
+    url = f"{zitadel_endpoint.rstrip('/')}/oauth/v2/token"
+    req = urllib.request.Request(url, data=data, method="POST")
+    req.add_header("Content-Type", "application/x-www-form-urlencoded")
+
+    with urllib.request.urlopen(req) as resp:
+        body = json.loads(resp.read())
+
+    # Try id_token first (for machine-to-machine), fall back to access_token
+    token = body.get("id_token") or body.get("access_token")
+    if not token:
+        raise RuntimeError(f"Zitadel client_credentials grant returned no token: {body}")
+    logger.info("Zitadel JWT obtained successfully")
+    return token
+
+
+def get_sts_credentials(sts_endpoint, bearer_token=None, zitadel_endpoint=None,
+                        zitadel_client_id=None, zitadel_client_secret=None, zitadel_audience=None):
+    """
+    Exchange a JWT bearer token for temporary S3 credentials via AssumeRoleWithWebIdentity.
+    If zitadel_endpoint/client_id/client_secret/audience are provided, first fetches a
+    Zitadel JWT via client_credentials, then passes that JWT to the STS endpoint.
+    If bearer_token is provided, uses it directly (expected to be a JWT).
+    Returns dict with access_key, secret_key, session_token.
+    """
+    import json
+    import urllib.parse
+    import urllib.request
+    
+    jwt_token = bearer_token
+    
+    # Fetch JWT from Zitadel if credentials provided (takes precedence over bearer_token)
+    if zitadel_endpoint and zitadel_client_id and zitadel_client_secret and zitadel_audience:
+        logger.info("Fetching Zitadel JWT for STS...")
+        jwt_token = get_zitadel_jwt(zitadel_endpoint, zitadel_client_id, zitadel_client_secret,
+                                    zitadel_audience)
+    
+    if not jwt_token:
+        raise ValueError("No authentication token available: provide either bearer_token or Zitadel credentials")
+
+    # Use boto3 STS client for proper protocol handling
+    import boto3
+    from botocore.config import Config
+    
+    sts = boto3.client(
+        "sts",
+        endpoint_url=sts_endpoint,
+        aws_access_key_id="placeholder",
+        aws_secret_access_key="placeholder",
+        region_name="us-east-1",
+        config=Config(signature_version='s3v4'),
+    )
+    
+    logger.info(f"Assuming role via STS: {sts_endpoint}")
+    resp = sts.assume_role_with_web_identity(
+        RoleArn="arn:aws:sts::000000000000:assumed-role/s3sentinel/spark-benchmark",
+        RoleSessionName="spark-benchmark",
+        WebIdentityToken=jwt_token,
+    )
+    
+    creds = resp["Credentials"]
+    return {
+        "access_key": creds["AccessKeyId"],
+        "secret_key": creds["SecretAccessKey"],
+        "session_token": creds["SessionToken"],
+    }
 
 
 def gen_data(spark, args):
@@ -90,7 +192,8 @@ def gen_data(spark, args):
                     "-TABLE", tbl,
                     "-TERMINATE", "N"
                 ]
-                result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+                result = subprocess.run(cmd, capture_output=True, text=True, check=False,
+                                       cwd=str(Path(dsdgen).parent))
                 if result.returncode != 0:
                     raise RuntimeError(f"dsdgen failed for {tbl} child {partition_id + 1}: {result.stderr}")
 
@@ -196,6 +299,38 @@ def list_tpcds_tables():
     ]
 
 
+def compare_results(spark, args):
+    """
+    Join proxy and direct query timing results and write a side-by-side comparison.
+    Output columns: query, proxy_seconds, direct_seconds, speedup_ratio (direct/proxy).
+    """
+    from pyspark.sql import functions as F
+
+    logger.info(f"Comparing results: proxy={args.proxy_result_path}, direct={args.direct_result_path}")
+
+    proxy = spark.read.parquet(f"{args.proxy_result_path.rstrip('/')}/results")
+    direct = spark.read.parquet(f"{args.direct_result_path.rstrip('/')}/results")
+
+    proxy_agg = proxy.groupBy("query").agg(
+        F.avg("elapsed_seconds").alias("proxy_seconds")
+    )
+    direct_agg = direct.groupBy("query").agg(
+        F.avg("elapsed_seconds").alias("direct_seconds")
+    )
+
+    comparison = proxy_agg.join(direct_agg, on="query", how="outer").withColumn(
+        "speedup_ratio",
+        F.round(F.col("direct_seconds") / F.col("proxy_seconds"), 4)
+    ).orderBy("query")
+
+    comparison.show(truncate=False)
+
+    if args.result_path:
+        out = f"{args.result_path.rstrip('/')}/comparison"
+        comparison.write.mode("overwrite").parquet(out)
+        logger.info(f"Comparison written to {out}")
+
+
 def check_s3_connectivity(spark, data_path, timeout_seconds=30):
     """
     Verify S3 endpoint is reachable before starting heavy workload.
@@ -247,15 +382,44 @@ def check_s3_connectivity(spark, data_path, timeout_seconds=30):
 def main():
     args = parse_args()
 
-    spark = SparkSession.builder \
-        .appName("tpcds-benchmark") \
-        .getOrCreate()
+    builder = SparkSession.builder.appName("tpcds-benchmark")
+
+    # Try STS credential exchange if configured, but make it optional
+    creds_obtained = False
+    if args.sts_endpoint:
+        try:
+            logger.info(f"Fetching temporary credentials from STS: {args.sts_endpoint}")
+            creds = get_sts_credentials(
+                args.sts_endpoint,
+                bearer_token=getattr(args, "bearer_token", None),
+                zitadel_endpoint=getattr(args, "zitadel_endpoint", None),
+                zitadel_client_id=getattr(args, "zitadel_client_id", None),
+                zitadel_client_secret=getattr(args, "zitadel_client_secret", None),
+                zitadel_audience=getattr(args, "zitadel_audience", None),
+            )
+            builder = (builder
+                       .config("spark.hadoop.fs.s3a.aws.credentials.provider",
+                               "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider")
+                       .config("spark.hadoop.fs.s3a.access.key", creds["access_key"])
+                       .config("spark.hadoop.fs.s3a.secret.key", creds["secret_key"])
+                       .config("spark.hadoop.fs.s3a.session.token", creds["session_token"]))
+            logger.info("STS credentials obtained successfully")
+            creds_obtained = True
+        except Exception as e:
+            logger.warning(f"Failed to obtain STS credentials: {e}. Continuing with static credentials.")
+
+    spark = builder.getOrCreate()
 
     try:
         # Preflight mode just checks connectivity and exits
         if args.mode == "preflight":
             check_s3_connectivity(spark, args.data_path)
             logger.info("Preflight check completed successfully")
+            return
+
+        # Compare mode reads existing results from both paths and diffs them
+        if args.mode == "compare":
+            compare_results(spark, args)
             return
 
         # Fail fast if S3 is not reachable
