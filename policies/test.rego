@@ -27,6 +27,17 @@ allow if {
     explicitly_allowed
 }
 
+# Allow all bucket-level operations for any authenticated principal, except deletes.
+bucket_delete_actions := {"s3:DeleteBucket", "s3:DeleteBucketPolicy"}
+
+allow if {
+    is_bucket_level_request
+    not request_action in bucket_delete_actions
+}
+
+is_bucket_level_request if { not input.key }
+is_bucket_level_request if { input.key == "" }
+
 # ---------------------------------------------------------------------------
 # Resolve principal: map ZITADEL user ID → product name via principals.json.
 # Falls back to the raw principal if no mapping exists (e.g. human users).
@@ -42,6 +53,11 @@ resolved_principal := name if {
 
 request_resource := sprintf("arn:s3sentinel:s3:::%s/%s", [input.bucket, input.key]) if {
     input.key != ""
+}
+
+# key absent or empty string → bucket-level resource
+request_resource := sprintf("arn:s3sentinel:s3:::%s", [input.bucket]) if {
+    not input.key
 }
 
 request_resource := sprintf("arn:s3sentinel:s3:::%s", [input.bucket]) if {
