@@ -1,67 +1,103 @@
-# TPC-DS Data IO Benchmark for S3 Proxy Testing
+# Spark Benchmark: TPC-DS-Shaped IO Benchmark
 
-PySpark-based TPC-DS benchmark for stress-testing S3 endpoints (UpCloud direct vs Sentinel proxy).
-The benchmark keeps TPC-DS data shape, but focuses on storage IO throughput/latency (read and write), not SQL query performance.
+This folder contains the Spark-based benchmark used to compare IO performance between:
 
-## Structure
+- Direct UpCloud S3 access
+- S3 access through s3sentinel proxy
 
-```
-spark-benchmark/
-├── Dockerfile                          # Builds tpcds-kit + PySpark runtime
-├── requirements.txt                    # Python dependencies
-├── src/main/python/tpcds_benchmark.py  # TPC-DS data gen + IO benchmark runner
-├── dags/s3_sentinel_stress_test.py     # Airflow DAG (Conveyor)
-└── resources/                          # Terraform (IAM, S3)
-```
+The benchmark keeps the TPC-DS data shape (table layout/partitioning style) but measures storage IO behavior rather than SQL query speed.
+
+## What This Benchmark Measures
+
+- IO read throughput/latency by scanning generated Parquet tables
+- IO write throughput/latency by rewriting Parquet data
+- Side-by-side timing comparison of proxy vs direct access
+
+Modes implemented in the runner:
+
+- `gen`: generate TPC-DS-shaped data
+- `preflight`: connectivity and credential checks
+- `io-read`: read benchmark
+- `io-write`: write benchmark
+- `io`: read + write benchmark
+- `compare`: aggregate and compare proxy/direct results
+
+## Where It Runs
+
+This benchmark runs as Spark applications on Conveyor-managed Kubernetes.
+
+- DAG/orchestration: Airflow on Conveyor
+- Driver/executors: ephemeral Spark pods in the selected Conveyor environment
+- Data path: S3A URLs in the configured bucket/prefix
+
+Primary runtime files:
+
+- `dags/s3_sentinel_stress_test.py`: Airflow DAG and Spark config
+- `src/main/python/tpcds_benchmark.py`: benchmark logic
+- `Dockerfile`: benchmark image build
+
+## Execution Flow
+
+Default DAG flow:
+
+1. `preflight_check_proxy`
+2. `preflight_check_direct`
+3. `tpcds_gen_proxy`
+4. `tpcds_gen_direct`
+5. `tpcds_io_proxy`
+6. `tpcds_io_direct`
+7. `compare_results`
+
+Results are written under each benchmark path in `_results/results` (Parquet), and comparison output under `_results/comparison` when compare mode is enabled.
 
 ## Configuration
 
-Edit `dags/s3_sentinel_stress_test.py`:
+Edit DAG settings in `dags/s3_sentinel_stress_test.py`:
 
-```python
-S3_PROXY_ENDPOINT = "..."   # Sentinel proxy URL
-S3_DIRECT_ENDPOINT = "..."  # UpCloud direct endpoint
-S3_BUCKET_NAME = "..."
-S3_ACCESS_KEY = "..."
-S3_SECRET_KEY = "..."
-SCALE_FACTOR = "100"        # TPC-DS scale in GB
-```
+- Proxy and direct endpoints
+- Bucket name and prefixes
+- Scale factor
+- Worker sizing and executor count
+- STS/Zitadel configuration for proxy path
 
-## Usage
+Build/deploy:
 
 ```bash
-# Build and deploy
 conveyor build
-conveyor deploy
-
-# Trigger manually from Airflow UI
+conveyor deploy --env demo
 ```
 
-CLI mode examples:
+## Local CLI Examples
 
 ```bash
-# IO read benchmark only
+# IO read benchmark
 python src/main/python/tpcds_benchmark.py \
-	--mode io-read \
-	--data-path s3a://dp-data-bucket/product-0/private/direct/sf100 \
-	--iterations 1 \
-	--result-path s3a://dp-data-bucket/product-0/private/direct/sf100/_results
+  --mode io-read \
+  --data-path s3a://dp-data-bucket/product-0/private/direct/sf100 \
+  --iterations 1 \
+  --result-path s3a://dp-data-bucket/product-0/private/direct/sf100/_results
 
-# IO write benchmark only
+# IO write benchmark
 python src/main/python/tpcds_benchmark.py \
-	--mode io-write \
-	--data-path s3a://dp-data-bucket/product-0/private/direct/sf100 \
-	--io-write-path s3a://dp-data-bucket/product-0/private/direct/sf100/_io_write \
-	--iterations 1 \
-	--result-path s3a://dp-data-bucket/product-0/private/direct/sf100/_results
+  --mode io-write \
+  --data-path s3a://dp-data-bucket/product-0/private/direct/sf100 \
+  --io-write-path s3a://dp-data-bucket/product-0/private/direct/sf100/_io_write \
+  --iterations 1 \
+  --result-path s3a://dp-data-bucket/product-0/private/direct/sf100/_results
 ```
 
-## DAG Tasks
+## Security Note About Credentials in This Folder
 
-Runs sequentially to avoid interference:
-1. `tpcds_gen_proxy` — generate data via proxy
-2. `tpcds_io_proxy` — run TPC-DS-backed IO benchmark (read + write) via proxy
-3. `tpcds_gen_direct` — generate data direct to UpCloud
-4. `tpcds_io_direct` — run TPC-DS-backed IO benchmark (read + write) direct
+Some values in test configuration are tied to short-lived, demo infrastructure.
 
-Results (timings) written to `{data_path}/_results/`.
+- In this setup, the benchmark cluster and related environment are ephemeral and deleted after use.
+- That significantly reduces practical risk from historical credential exposure in old logs/config snapshots.
+
+Even with ephemeral clusters, treat any exposed credential as compromised and rotate it.
+
+Recommended hygiene:
+
+1. Rotate static access keys and client secrets.
+2. Prefer short-lived STS credentials over long-lived keys.
+3. Move secrets to environment/secret manager references instead of committing literal values.
+4. Remove/redact sensitive values from historical examples where possible.

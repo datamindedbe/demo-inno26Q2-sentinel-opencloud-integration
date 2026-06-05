@@ -47,6 +47,10 @@ def make_s3_config(endpoint):
         "spark.hadoop.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
         "spark.hadoop.fs.s3a.access.key": S3_ACCESS_KEY,
         "spark.hadoop.fs.s3a.secret.key": S3_SECRET_KEY,
+        # UpCloud (and S3-compatible endpoints) don't support AWS v4 payload signing with checksums
+        # Disable to prevent 403 errors when writing through s3sentinel proxy
+        "spark.hadoop.fs.s3a.payload.signing": "false",
+        "spark.hadoop.fs.s3a.checksum.algorithm": "NONE",
         "spark.hadoop.fs.s3a.connection.maximum": "2500",
         "spark.hadoop.fs.s3a.threads.max": "2500",
         "spark.hadoop.fs.s3a.connection.establish.timeout": "5000",

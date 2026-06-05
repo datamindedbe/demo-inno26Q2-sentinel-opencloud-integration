@@ -475,6 +475,8 @@ def check_s3_connectivity(spark, data_path, timeout_seconds=30):
     logger.info(f"S3A Access Key: {hc.get('fs.s3a.access.key')[:10] if hc.get('fs.s3a.access.key') else 'NOT SET'}...")
     logger.info(f"S3A Session Token set: {bool(hc.get('fs.s3a.session.token'))}")
     logger.info(f"S3A Endpoint: {hc.get('fs.s3a.endpoint')}")
+    logger.info(f"S3A Payload Signing: {hc.get('fs.s3a.payload.signing', 'default')}")
+    logger.info(f"S3A Checksum Algorithm: {hc.get('fs.s3a.checksum.algorithm', 'default')}")
 
     test_path = f"{data_path.rstrip('/')}/_connectivity_test"
     bucket = data_path.replace("s3a://", "").split("/")[0]
@@ -546,16 +548,23 @@ def main():
 
     spark = builder.getOrCreate()
 
-    # Push STS credentials into the live Hadoop config after session creation.
-    # This overrides any static credentials baked in by Conveyor's spark.properties.
+    # Push STS credentials and payload signing settings into the live Hadoop config after session creation.
+    # This overrides any static credentials/settings baked in by Conveyor's spark.properties.
+    hc = spark._jsc.hadoopConfiguration()
+    
     if creds:
-        hc = spark._jsc.hadoopConfiguration()
         hc.set("fs.s3a.aws.credentials.provider",
                "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider")
         hc.set("fs.s3a.access.key", creds["access_key"])
         hc.set("fs.s3a.secret.key", creds["secret_key"])
         hc.set("fs.s3a.session.token", creds["session_token"])
         logger.info("Applied STS credentials to live Hadoop configuration")
+    
+    # Disable payload signing and checksums for S3-compatible endpoints (UpCloud/s3sentinel)
+    # These endpoints don't support AWS v4 payload signing with checksums, which causes 403 errors.
+    hc.set("fs.s3a.payload.signing", "false")
+    hc.set("fs.s3a.checksum.algorithm", "NONE")
+    logger.info("Disabled payload signing and checksums for S3-compatible endpoint")
 
     try:
         if args.mode == "preflight":
