@@ -6,9 +6,9 @@ Distributed data gen: each executor runs dsdgen with -PARALLEL/-CHILD flags.
 """
 import argparse
 import logging
-import os
 import subprocess
 import tempfile
+import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 def parse_args():
     parser = argparse.ArgumentParser(description="TPC-DS benchmark")
     parser.add_argument("--mode", required=True,
-                        choices=["gen", "query", "gen-query", "preflight", "compare"],
+                        choices=["gen", "query", "gen-query", "preflight", "compare",
+                                 "io-read", "io-write", "io"],
                         help="Benchmark mode (preflight = connectivity check only, compare = diff results)")
     parser.add_argument("--scale-factor", default="100", type=str,
                         help="TPC-DS scale factor (GB)")
@@ -37,10 +38,14 @@ def parse_args():
                         help="Number of times to run each query")
     parser.add_argument("--result-path",
                         help="S3 path to write query results and timings")
+    parser.add_argument("--io-write-path",
+                        help="S3 path for IO write benchmark output (defaults to <data-path>/_io_write)")
+    parser.add_argument("--io-table-filter",
+                        help="Comma-separated TPC-DS table names to include in IO benchmark")
     parser.add_argument("--proxy-result-path",
-                        help="S3 path to proxy query results (for compare mode)")
+                        help="S3 path to proxy benchmark results (for compare mode)")
     parser.add_argument("--direct-result-path",
-                        help="S3 path to direct query results (for compare mode)")
+                        help="S3 path to direct benchmark results (for compare mode)")
     parser.add_argument("--sts-endpoint",
                         help="s3sentinel STS endpoint for AssumeRoleWithWebIdentity")
     parser.add_argument("--bearer-token",
@@ -318,17 +323,23 @@ def compare_results(spark, args):
     proxy = spark.read.parquet(f"{args.proxy_result_path.rstrip('/')}/results")
     direct = spark.read.parquet(f"{args.direct_result_path.rstrip('/')}/results")
 
-    proxy_agg = proxy.groupBy("query").agg(
-        F.avg("elapsed_seconds").alias("proxy_seconds")
-    )
-    direct_agg = direct.groupBy("query").agg(
-        F.avg("elapsed_seconds").alias("direct_seconds")
-    )
+    if "query" in proxy.columns and "query" in direct.columns:
+        group_cols = ["query"]
+    elif "operation" in proxy.columns and "operation" in direct.columns and \
+            "table" in proxy.columns and "table" in direct.columns:
+        group_cols = ["operation", "table"]
+    else:
+        raise ValueError(
+            "Unsupported result schema for compare mode. "
+            "Expected query timings or IO timings with operation/table columns."
+        )
 
-    comparison = proxy_agg.join(direct_agg, on="query", how="outer").withColumn(
-        "speedup_ratio",
-        F.round(F.col("direct_seconds") / F.col("proxy_seconds"), 4)
-    ).orderBy("query")
+    proxy_agg = proxy.groupBy(*group_cols).agg(F.avg("elapsed_seconds").alias("proxy_seconds"))
+    direct_agg = direct.groupBy(*group_cols).agg(F.avg("elapsed_seconds").alias("direct_seconds"))
+
+    comparison = proxy_agg.join(direct_agg, on=group_cols, how="outer").withColumn(
+        "speedup_ratio", F.round(F.col("direct_seconds") / F.col("proxy_seconds"), 4)
+    ).orderBy(*group_cols)
 
     comparison.show(truncate=False)
 
@@ -336,6 +347,119 @@ def compare_results(spark, args):
         out = f"{args.result_path.rstrip('/')}/comparison"
         comparison.write.mode("overwrite").parquet(out)
         logger.info(f"Comparison written to {out}")
+
+
+def _selected_tpcds_tables(args):
+    """Return all tables or user-filtered subset for IO benchmark."""
+    all_tables = list_tpcds_tables()
+    if not args.io_table_filter:
+        return all_tables
+
+    selected = [t.strip() for t in args.io_table_filter.split(",") if t.strip()]
+    invalid = sorted(set(selected) - set(all_tables))
+    if invalid:
+        raise ValueError(f"Unknown table(s) in --io-table-filter: {', '.join(invalid)}")
+    return selected
+
+
+def run_io_benchmark(spark, args):
+    """
+    Run raw storage IO benchmark on TPC-DS datasets (without SQL execution).
+    - io-read: measures full-table read scan time using DataFrame.count()
+    - io-write: measures parquet rewrite time to an IO destination prefix
+    - io: runs both read and write benchmarks
+    """
+    mode = args.mode
+    run_read = mode in ["io-read", "io"]
+    run_write = mode in ["io-write", "io"]
+
+    data_path = args.data_path.rstrip("/")
+    write_base = (args.io_write_path or f"{data_path}/_io_write").rstrip("/")
+    run_id = datetime.utcnow().strftime("%Y%m%d%H%M%S") + "-" + uuid.uuid4().hex[:8]
+
+    logger.info(f"Starting IO benchmark mode={mode}, source={data_path}, write_base={write_base}")
+
+    results = []
+    for table in _selected_tpcds_tables(args):
+        source = f"{data_path}/{table}"
+        for iteration in range(args.iterations):
+            iter_idx = iteration + 1
+
+            if run_read:
+                logger.info(f"IO read benchmark: {table} (iteration {iter_idx}/{args.iterations})")
+                start = datetime.now()
+                try:
+                    rows = spark.read.parquet(source).count()
+                    elapsed = (datetime.now() - start).total_seconds()
+                    results.append({
+                        "operation": "read",
+                        "table": table,
+                        "iteration": iter_idx,
+                        "rows": rows,
+                        "elapsed_seconds": elapsed,
+                    })
+                    logger.info(f"IO read {table}: {elapsed:.2f}s ({rows} rows)")
+                except Exception as e:
+                    logger.error(f"IO read failed for {table}: {e}")
+                    results.append({
+                        "operation": "read",
+                        "table": table,
+                        "iteration": iter_idx,
+                        "rows": None,
+                        "elapsed_seconds": None,
+                        "error": str(e),
+                    })
+
+            if run_write:
+                logger.info(f"IO write benchmark: {table} (iteration {iter_idx}/{args.iterations})")
+                target = f"{write_base}/{run_id}/{table}/iter_{iter_idx}"
+                start = datetime.now()
+                try:
+                    df = spark.read.parquet(source)
+                    rows = df.count()
+                    df.write.mode("overwrite").parquet(target)
+                    elapsed = (datetime.now() - start).total_seconds()
+                    results.append({
+                        "operation": "write",
+                        "table": table,
+                        "iteration": iter_idx,
+                        "rows": rows,
+                        "elapsed_seconds": elapsed,
+                        "target_path": target,
+                    })
+                    logger.info(f"IO write {table}: {elapsed:.2f}s ({rows} rows)")
+                except Exception as e:
+                    logger.error(f"IO write failed for {table}: {e}")
+                    results.append({
+                        "operation": "write",
+                        "table": table,
+                        "iteration": iter_idx,
+                        "rows": None,
+                        "elapsed_seconds": None,
+                        "target_path": target,
+                        "error": str(e),
+                    })
+
+    if args.result_path and results:
+        # Normalize all rows to have the same keys so Spark can infer a consistent schema
+        all_keys = ["operation", "table", "iteration", "rows", "elapsed_seconds",
+                    "target_path", "error"]
+        normalized = [{k: r.get(k) for k in all_keys} for r in results]
+        from pyspark.sql.types import StructType, StructField, StringType, LongType, DoubleType, IntegerType
+        schema = StructType([
+            StructField("operation",       StringType(),  True),
+            StructField("table",           StringType(),  True),
+            StructField("iteration",       IntegerType(), True),
+            StructField("rows",            LongType(),    True),
+            StructField("elapsed_seconds", DoubleType(),  True),
+            StructField("target_path",     StringType(),  True),
+            StructField("error",           StringType(),  True),
+        ])
+        result_df = spark.createDataFrame(normalized, schema=schema)
+        result_path = f"{args.result_path.rstrip('/')}/results"
+        result_df.write.mode("overwrite").parquet(result_path)
+        logger.info(f"IO benchmark results written to {result_path}")
+
 
 
 def check_s3_connectivity(spark, data_path, timeout_seconds=30):
@@ -352,10 +476,8 @@ def check_s3_connectivity(spark, data_path, timeout_seconds=30):
     logger.info(f"S3A Session Token set: {bool(hc.get('fs.s3a.session.token'))}")
     logger.info(f"S3A Endpoint: {hc.get('fs.s3a.endpoint')}")
 
-    # Extract bucket from path (s3a://bucket/path -> bucket)
-    parts = data_path.replace("s3a://", "").split("/")
-    bucket = parts[0]
-    test_path = f"s3a://{bucket}/_connectivity_test"
+    test_path = f"{data_path.rstrip('/')}/_connectivity_test"
+    bucket = data_path.replace("s3a://", "").split("/")[0]
 
     try:
         # Try to write a small test file
@@ -393,12 +515,10 @@ def check_s3_connectivity(spark, data_path, timeout_seconds=30):
         logger.error(error_msg)
         raise ConnectionError(f"S3 connectivity check failed: {e}") from e
 
-
 def main():
     args = parse_args()
 
-    builder = SparkSession.builder.appName("tpcds-benchmark")
-
+    # Get STS credentials FIRST if using proxy
     creds = None
     if args.sts_endpoint:
         logger.info(f"Fetching temporary credentials from STS: {args.sts_endpoint}")
@@ -412,34 +532,32 @@ def main():
         )
         logger.info("STS credentials obtained successfully")
 
+    # All modes (including preflight) use a SparkSession so s3a config is always active
+    builder = SparkSession.builder.appName("tpcds-benchmark")
+
+    if creds:
+        builder = (builder
+                   .config("spark.hadoop.fs.s3a.aws.credentials.provider",
+                           "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider")
+                   .config("spark.hadoop.fs.s3a.access.key", creds["access_key"])
+                   .config("spark.hadoop.fs.s3a.secret.key", creds["secret_key"])
+                   .config("spark.hadoop.fs.s3a.session.token", creds["session_token"]))
+        logger.info("Configured Spark with STS credentials")
+
     spark = builder.getOrCreate()
 
-    # Apply STS credentials directly to Hadoop Configuration AFTER session creation.
-    # This overrides any credential provider already set in spark.properties by Conveyor,
-    # ensuring the session token is included in every S3A request as X-Amz-Security-Token.
-    if args.sts_endpoint and creds:
+    # Push STS credentials into the live Hadoop config after session creation.
+    # This overrides any static credentials baked in by Conveyor's spark.properties.
+    if creds:
         hc = spark._jsc.hadoopConfiguration()
-        logger.info(f"Setting S3A credentials: access_key={creds['access_key'][:10]}..., session_token_len={len(creds['session_token'])}")
         hc.set("fs.s3a.aws.credentials.provider",
                "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider")
         hc.set("fs.s3a.access.key", creds["access_key"])
         hc.set("fs.s3a.secret.key", creds["secret_key"])
         hc.set("fs.s3a.session.token", creds["session_token"])
-        
-        # CRITICAL: Close all cached filesystems so new S3A instances pick up the new config.
-        # S3AFileSystem instances are cached and reused - if we don't close them, they'll
-        # keep using the old SimpleAWSCredentialsProvider set in spark.properties.
-        fs_class = spark._jvm.org.apache.hadoop.fs.FileSystem
-        fs_class.closeAll()
-        logger.info("Closed FileSystem cache to force re-initialization with new credentials")
-        
-        # Log what's now set to verify
-        logger.info(f"Hadoop Config fs.s3a.aws.credentials.provider={hc.get('fs.s3a.aws.credentials.provider')}")
-        logger.info(f"Hadoop Config fs.s3a.session.token set={bool(hc.get('fs.s3a.session.token'))}")
-        logger.info("STS credentials applied and filesystem cache cleared")
+        logger.info("Applied STS credentials to live Hadoop configuration")
 
     try:
-        # Preflight mode just checks connectivity and exits
         if args.mode == "preflight":
             check_s3_connectivity(spark, args.data_path)
             logger.info("Preflight check completed successfully")
@@ -450,8 +568,12 @@ def main():
             compare_results(spark, args)
             return
 
-        # Fail fast if S3 is not reachable
+        # Fail fast before long-running tasks
         check_s3_connectivity(spark, args.data_path)
+
+        if args.mode in ["io-read", "io-write", "io"]:
+            run_io_benchmark(spark, args)
+            return
 
         if args.mode in ["gen", "gen-query"]:
             gen_data(spark, args)

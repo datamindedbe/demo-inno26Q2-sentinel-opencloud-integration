@@ -28,8 +28,8 @@ S3_PROXY_TOKEN     = "RVQq2_OZmLU3-B1WX5BejPPW93_MmjQpxvxW4S34jFPblTU618br43Zjo7
 # ZITADEL_CLIENT_ID: client_id of the machine-user OIDC app in Zitadel
 # ZITADEL_AUDIENCE : s3sentinel Zitadel project ID (= expected 'aud' claim)
 ZITADEL_ENDPOINT      = "https://zitadel.sentinel.playground.dataminded.cloud"
-ZITADEL_CLIENT_ID     = "spark-benchmark"  # machine-user client_id from Zitadel
-ZITADEL_CLIENT_SECRET = "kdbCpror1hQwN7kpbozmzf0P4eYihXUWtpUmeYgAsZj8AiNTGQqlBfW50ne5O8Qq"
+ZITADEL_CLIENT_ID     = "product-0"  # machine-user client_id from Zitadel
+ZITADEL_CLIENT_SECRET = "ntf3wHkfcb0QcRJXchfwf75wTEEXMWLpvnddSpkgkDxDRmhElLygW8D163kxPHJV"
 ZITADEL_AUDIENCE      = "375932491829084258" # the s3sentinel project ID 
 S3_BUCKET_NAME = "dp-data-bucket"
 S3_ACCESS_KEY = "AKIA1CEBCD7395167FAD"
@@ -60,14 +60,14 @@ def make_s3_config(endpoint):
 
 # ========== COMPARE TASK ==========
 def make_compare_task():
-    """Compare proxy vs direct query timing results."""
+    """Compare proxy vs direct benchmark timing results."""
     return ConveyorSparkSubmitOperatorV2(
         task_id="compare_results",
         application="local:///opt/app/tpcds_benchmark.py",
         application_args=[
             "--mode", "compare",
-            "--proxy-result-path", f"{TARGET_BUCKET}/tpcds-proxy/sf{SCALE_FACTOR}/_results",
-            "--direct-result-path", f"{TARGET_BUCKET}/tpcds-direct/sf{SCALE_FACTOR}/_results",
+            "--proxy-result-path", f"{TARGET_BUCKET}/product-0/private/proxy/sf{SCALE_FACTOR}/_results",
+            "--direct-result-path", f"{TARGET_BUCKET}/product-0/private/direct/sf{SCALE_FACTOR}/_results",
             "--result-path", f"{TARGET_BUCKET}/tpcds-comparison/sf{SCALE_FACTOR}",
         ],
         conf=proxy_config,
@@ -119,12 +119,12 @@ def make_preflight_task(task_id, data_path, s3_config, extra_args=None):
 
 # ========== PREFLIGHT CHECKS ==========
 direct_config = make_s3_config(S3_DIRECT_ENDPOINT)
-direct_data_path = f"{TARGET_BUCKET}/tpcds-direct/sf{SCALE_FACTOR}"
+direct_data_path = f"{TARGET_BUCKET}/product-0/private/direct/sf{SCALE_FACTOR}"
 
 # ========== PROXY CONFIG ==========
 # Credentials are fetched from the STS endpoint at runtime by the Spark app.
 proxy_config = make_s3_config(S3_PROXY_ENDPOINT)
-proxy_data_path = f"{TARGET_BUCKET}/tpcds-proxy/sf{SCALE_FACTOR}"
+proxy_data_path = f"{TARGET_BUCKET}/product-0/private/proxy/sf{SCALE_FACTOR}"
 proxy_sts_args = [
     "--sts-endpoint",         S3_STS_ENDPOINT,
     "--bearer-token",         S3_PROXY_TOKEN,
@@ -141,8 +141,8 @@ gen_proxy = make_tpcds_task(
     "tpcds_gen_proxy", "gen", SCALE_FACTOR, proxy_data_path, proxy_config, NUM_WORKERS,
     extra_args=proxy_sts_args
 )
-query_proxy = make_tpcds_task(
-    "tpcds_query_proxy", "query", SCALE_FACTOR, proxy_data_path, proxy_config, NUM_WORKERS,
+io_proxy = make_tpcds_task(
+    "tpcds_io_proxy", "io", SCALE_FACTOR, proxy_data_path, proxy_config, NUM_WORKERS,
     extra_args=proxy_sts_args
 )
 compare = make_compare_task()
@@ -165,9 +165,9 @@ gen_direct = make_tpcds_task(
     NUM_WORKERS
 )
 
-query_direct = make_tpcds_task(
-    "tpcds_query_direct",
-    "query",
+io_direct = make_tpcds_task(
+    "tpcds_io_direct",
+    "io",
     SCALE_FACTOR,
     direct_data_path,
     direct_config,
@@ -176,10 +176,9 @@ query_direct = make_tpcds_task(
 
 
 # Task dependencies:
-preflight_proxy >> gen_direct
 preflight_proxy >> gen_proxy
 preflight_direct >> gen_direct
 preflight_direct >> gen_proxy
-gen_direct >> query_direct
-gen_proxy >> query_proxy
-[query_direct, query_proxy] >> compare
+gen_direct >> io_direct
+gen_proxy >> io_proxy
+[io_direct, io_proxy] >> compare

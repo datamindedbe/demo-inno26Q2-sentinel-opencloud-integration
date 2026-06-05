@@ -27,8 +27,8 @@ USER root
 
 RUN apt-get update && apt-get install -y python3-pip && rm -rf /var/lib/apt/lists/*
 
-# Copy dsdgen binary from builder
-COPY --from=builder /build/tpcds-kit/tools/dsdgen /opt/tpcds-kit/tools/dsdgen
+# Copy dsdgen binary and ALL distribution files (*.dst, *.idx, etc.) from builder
+COPY --from=builder /build/tpcds-kit/tools/ /opt/tpcds-kit/tools/
 
 # Copy queries from builder
 COPY --from=builder /opt/tpcds/queries /opt/tpcds/queries
