@@ -10,3 +10,7 @@ s3sentinel_backend_secret_key = "your S3 secret key"
 # s3sentinel_jwt_audience is derived automatically from the Zitadel project created by the zitadel_apps module
 # Set to enable the STS credential-vending server on port 8090. Leave empty to disable.
 s3sentinel_sts_token_secret = ""
+
+opa_bundle_bucket_domain_name = "<endpoint domain, no https://>"
+opa_bundle_access_key         = "<access_key>"
+opa_bundle_secret_key         = "<secret_key>"
