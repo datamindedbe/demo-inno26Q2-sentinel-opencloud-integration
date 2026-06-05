@@ -62,3 +62,25 @@ variable "s3sentinel_sts_token_ttl" {
   description = "Lifetime of STS-issued credentials (Go duration string, e.g. '1h', '30m')."
 }
 
+variable "opa_bundle_bucket_domain_name" {
+  type        = string
+  description = "Domain name of the s3 endpoint hosting OPA policy bundles."
+}
+
+variable "opa_bundle_bucket" {
+  type        = string
+  description = "Name of the s3 bucket holding the OPA policy bundle."
+}
+
+variable "opa_bundle_access_key" {
+  type        = string
+  sensitive   = true
+  description = "Read-only access key for the OPA policy bundle bucket."
+}
+
+variable "opa_bundle_secret_key" {
+  type        = string
+  sensitive   = true
+  description = "Read-only secret key for the OPA policy bundle bucket."
+}
+

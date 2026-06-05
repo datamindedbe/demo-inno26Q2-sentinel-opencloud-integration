@@ -1,12 +1,16 @@
-resource "kubernetes_config_map" "opa_policies" {
+resource "kubernetes_secret" "opa_bundle_credentials" {
   metadata {
-    name      = "opa-policies"
+    name      = "opa-bundle-credentials"
     namespace = "opa"
   }
+
   data = {
-    for f in fileset("${path.module}/policies", "*.{rego,json}") :
-    f => file("${path.module}/policies/${f}")
+    AWS_ACCESS_KEY_ID     = var.bundle_access_key
+    AWS_SECRET_ACCESS_KEY = var.bundle_secret_key
+    AWS_REGION            = var.bundle_region
   }
+
+  type = "Opaque"
 }
 
 resource "helm_release" "opa" {
@@ -18,8 +22,8 @@ resource "helm_release" "opa" {
     yamlencode({
       logLevel        = "debug"
       logFormat       = "json"
-      policyDirectory = "/var/lib/opa/policies"
       useHttps        = false
+      policyDirectory = ""
 
       image = {
         repository = "openpolicyagent/opa"
@@ -27,33 +31,68 @@ resource "helm_release" "opa" {
         pullPolicy = "IfNotPresent"
       }
 
-      extraArgs = [
-        "--set=decision_logs.console=true",
-        "--ignore=..*",
-      ]
-
       extraEnv = [
         { name = "TRINO_LAKEKEEPER_CATALOG_NAME", value = "iceberg" },
         { name = "LAKEKEEPER_LAKEKEEPER_WAREHOUSE", value = "iceberg" },
+        {
+          name = "AWS_ACCESS_KEY_ID"
+          valueFrom = {
+            secretKeyRef = {
+              name = kubernetes_secret.opa_bundle_credentials.metadata[0].name
+              key  = "AWS_ACCESS_KEY_ID"
+            }
+          }
+        },
+        {
+          name = "AWS_SECRET_ACCESS_KEY"
+          valueFrom = {
+            secretKeyRef = {
+              name = kubernetes_secret.opa_bundle_credentials.metadata[0].name
+              key  = "AWS_SECRET_ACCESS_KEY"
+            }
+          }
+        },
+        {
+          name = "AWS_REGION"
+          valueFrom = {
+            secretKeyRef = {
+              name = kubernetes_secret.opa_bundle_credentials.metadata[0].name
+              key  = "AWS_REGION"
+            }
+          }
+        },
       ]
 
-      extraVolumes = [{
-        name = "policies"
-        configMap = {
-          name = kubernetes_config_map.opa_policies.metadata[0].name
+      opa = {
+        services = {
+          policies = {
+            url = "${var.bundle_endpoint}/${var.bundle_bucket}"
+            credentials = {
+              s3_signing = {
+                environment_credentials = {}
+              }
+            }
+          }
         }
-      }]
-
-      extraVolumeMounts = [{
-        name      = "policies"
-        mountPath = "/var/lib/opa/policies"
-        readOnly  = true
-      }]
+        bundles = {
+          authz = {
+            service  = "policies"
+            resource = var.bundle_resource
+            polling = {
+              min_delay_seconds = 5
+              max_delay_seconds = 5
+            }
+          }
+        }
+        decision_logs = {
+          console = true
+        }
+      }
 
       authz = { enabled = false }
       mgmt  = { enabled = false }
     })
   ]
 
-  depends_on = [kubernetes_config_map.opa_policies]
+  depends_on = [kubernetes_secret.opa_bundle_credentials]
 }

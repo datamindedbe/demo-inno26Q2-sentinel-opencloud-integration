@@ -13,4 +13,10 @@ module "s3sentinel" {
 
 module "opa" {
   source = "../../modules/opa"
+
+  bundle_endpoint   = "https://${var.opa_bundle_bucket_domain_name}"
+  bundle_bucket     = var.opa_bundle_bucket
+  bundle_region     = var.region
+  bundle_access_key = var.opa_bundle_access_key
+  bundle_secret_key = var.opa_bundle_secret_key
 }

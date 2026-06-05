@@ -1,0 +1,842 @@
+{
+  "policies": {
+    "product-0": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-0/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-0/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        }
+      ]
+    },
+    "product-1": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-7/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-8/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-2/*"
+          ]
+        }
+      ]
+    },
+    "product-2": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-1/*"
+          ]
+        }
+      ]
+    },
+    "product-3": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-7/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-4/*"
+          ]
+        }
+      ]
+    },
+    "product-4": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-4/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-4/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-4/*"
+          ]
+        }
+      ]
+    },
+    "product-5": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-5/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-7/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-4/*"
+          ]
+        }
+      ]
+    },
+    "product-6": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-6/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-6/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-6/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-6/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-6/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-6/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-6/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-3/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-7/*"
+          ]
+        }
+      ]
+    },
+    "product-7": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-7/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-1/*"
+          ]
+        }
+      ]
+    },
+    "product-8": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-8/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-8/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-8/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-8/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-8/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-8/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-8/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-3/*"
+          ]
+        }
+      ]
+    },
+    "product-9": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-9/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-1/*"
+          ]
+        }
+      ]
+    },
+    "product-10": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-7/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-8/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-9/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        }
+      ]
+    },
+    "product-11": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-7/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-8/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-4/*"
+          ]
+        }
+      ]
+    },
+    "product-12": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-10/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-4/*"
+          ]
+        }
+      ]
+    },
+    "product-13": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-13/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-5/*"
+          ]
+        }
+      ]
+    },
+    "product-14": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-14/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-14/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-14/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-14/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-14/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-8/*"
+          ]
+        }
+      ]
+    },
+    "product-15": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-13/asset-2/*"
+          ]
+        }
+      ]
+    },
+    "product-16": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-7/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-5/asset-1/*"
+          ]
+        }
+      ]
+    },
+    "product-17": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-7/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-8/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-9/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/asset-10/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-17/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-5/*"
+          ]
+        }
+      ]
+    },
+    "product-18": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-18/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-18/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-18/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-1/*"
+          ]
+        }
+      ]
+    },
+    "product-19": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-19/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-19/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-11/asset-8/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-4/*"
+          ]
+        }
+      ]
+    },
+    "product-20": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-20/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-3/*"
+          ]
+        }
+      ]
+    },
+    "product-21": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-21/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-21/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-21/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-21/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-1/asset-2/*"
+          ]
+        }
+      ]
+    },
+    "product-22": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-22/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-22/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-22/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-21/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-4/*"
+          ]
+        }
+      ]
+    },
+    "product-23": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-23/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-23/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-23/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-15/asset-5/*"
+          ]
+        }
+      ]
+    },
+    "product-24": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-24/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-24/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-24/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-9/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-10/asset-2/*"
+          ]
+        }
+      ]
+    },
+    "product-25": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-25/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-21/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-21/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-2/*"
+          ]
+        }
+      ]
+    },
+    "product-26": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-20/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-7/asset-2/*"
+          ]
+        }
+      ]
+    },
+    "product-27": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-6/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-7/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-8/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/asset-9/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-27/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-2/asset-5/*"
+          ]
+        }
+      ]
+    },
+    "product-28": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-28/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-12/asset-5/*"
+          ]
+        }
+      ]
+    },
+    "product-29": {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "write",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-29/asset-1/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-29/asset-2/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-29/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-29/asset-4/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-29/asset-5/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-29/private/*",
+            "arn:s3sentinel:s3:::dp-data-bucket"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "read",
+          "Resource": [
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-26/asset-3/*",
+            "arn:s3sentinel:s3:::dp-data-bucket/product-16/asset-5/*"
+          ]
+        }
+      ]
+    }
+  },
+  "principal_policies": {
+    "product-0": [
+      "product-0"
+    ],
+    "product-1": [
+      "product-1"
+    ],
+    "product-2": [
+      "product-2"
+    ],
+    "product-3": [
+      "product-3"
+    ],
+    "product-4": [
+      "product-4"
+    ],
+    "product-5": [
+      "product-5"
+    ],
+    "product-6": [
+      "product-6"
+    ],
+    "product-7": [
+      "product-7"
+    ],
+    "product-8": [
+      "product-8"
+    ],
+    "product-9": [
+      "product-9"
+    ],
+    "product-10": [
+      "product-10"
+    ],
+    "product-11": [
+      "product-11"
+    ],
+    "product-12": [
+      "product-12"
+    ],
+    "product-13": [
+      "product-13"
+    ],
+    "product-14": [
+      "product-14"
+    ],
+    "product-15": [
+      "product-15"
+    ],
+    "product-16": [
+      "product-16"
+    ],
+    "product-17": [
+      "product-17"
+    ],
+    "product-18": [
+      "product-18"
+    ],
+    "product-19": [
+      "product-19"
+    ],
+    "product-20": [
+      "product-20"
+    ],
+    "product-21": [
+      "product-21"
+    ],
+    "product-22": [
+      "product-22"
+    ],
+    "product-23": [
+      "product-23"
+    ],
+    "product-24": [
+      "product-24"
+    ],
+    "product-25": [
+      "product-25"
+    ],
+    "product-26": [
+      "product-26"
+    ],
+    "product-27": [
+      "product-27"
+    ],
+    "product-28": [
+      "product-28"
+    ],
+    "product-29": [
+      "product-29"
+    ]
+  }
+}

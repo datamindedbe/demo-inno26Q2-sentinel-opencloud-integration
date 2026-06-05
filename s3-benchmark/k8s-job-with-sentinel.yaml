@@ -48,7 +48,7 @@ spec:
             - name: OIDC_SCOPE
               value: "openid urn:zitadel:iam:org:project:id:375932491829084258:aud"
             - name: ROLE_ARN
-              value: "arn:aws:iam::000000000000:role/s3sentinel"
+              value: "arn:s3sentinel:iam::000000000000:role/s3sentinel"
 
             # Prometheus Pushgateway — each pod pushes its per-operation results
             # here on completion; Prometheus scrapes it and Grafana aggregates
