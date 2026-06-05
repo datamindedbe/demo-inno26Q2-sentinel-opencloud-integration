@@ -9,6 +9,17 @@ resource "helm_release" "s3sentinel" {
         proxyHost   = "s3sentinel.${var.domain}"
         opaEndpoint = var.opa_endpoint
 
+        resources = {
+          requests = {
+            cpu    = "1"
+            memory = "1Gi"
+          }
+          limits = {
+            cpu    = "1"
+            memory = "1Gi"
+          }
+        }
+
         backend = {
           endpoint  = var.backend_endpoint
           region    = var.backend_region

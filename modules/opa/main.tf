@@ -91,6 +91,17 @@ resource "helm_release" "opa" {
 
       authz = { enabled = false }
       mgmt  = { enabled = false }
+
+      resources = {
+        requests = {
+          cpu    = "1"
+          memory = "1Gi"
+        }
+        limits = {
+          cpu    = "1"
+          memory = "1Gi"
+        }
+      }
     })
   ]
 
