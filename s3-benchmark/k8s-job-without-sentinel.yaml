@@ -2,9 +2,9 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: s3-benchmark
-  namespace: default
+  namespace: benchmark
 spec:
-  ttlSecondsAfterFinished: 3600
+  ttlSecondsAfterFinished: 60
   template:
     spec:
       restartPolicy: Never
@@ -29,6 +29,11 @@ spec:
               value: wp6gqLfUZm9h772hMIQs70IbggTrYeAo/AZrIwzg
             - name: S3_BUCKET
               value: "benchmark"
+
+            # Prometheus Pushgateway — push per-operation results on completion
+            # so Grafana can compare with/without-sentinel runs side by side.
+            - name: PUSHGATEWAY_URL
+              value: "pushgateway.monitoring.svc.cluster.local:9091"
           resources:
             requests:
               cpu: "1"

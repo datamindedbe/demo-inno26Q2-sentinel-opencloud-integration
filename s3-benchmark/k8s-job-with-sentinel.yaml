@@ -2,9 +2,13 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: s3-benchmark-sentinel
-  namespace: default
+  namespace: benchmark
 spec:
-  ttlSecondsAfterFinished: 3600
+  ttlSecondsAfterFinished: 60
+  # Run @@PARALLELISM@@ pods concurrently (templated by the Makefile). Each pod
+  # self-assigns a random RUN_ID, so they isolate their own object keys.
+  completions: @@PARALLELISM@@
+  parallelism: @@PARALLELISM@@
   template:
     spec:
       restartPolicy: Never
@@ -35,15 +39,22 @@ spec:
               value: "https://zitadel.sentinel.playground.dataminded.cloud/oauth/v2/token"
             - name: OIDC_GRANT_TYPE
               value: "client_credentials"
-            - name: OIDC_CLIENT_ID
-              value: "s3-benchmark-user-name"
-            - name: OIDC_CLIENT_SECRET
-              value: "58qjEmlWvrhZAOBeqkrk3VVq2pEtFEJOWK4bE2h4vkCelkTSjzZM5xERNdRea7sq"
+            # Zitadel service-user identity (product-0..29), templated by the
+            # Makefile. Its client_id/client_secret are resolved at runtime from
+            # the secrets.json baked into the image.
+            - name: OIDC_IDENTITY
+              value: "@@IDENTITY@@"
             # Scope must include the s3sentinel project audience so the proxy accepts the JWT
             - name: OIDC_SCOPE
               value: "openid urn:zitadel:iam:org:project:id:375932491829084258:aud"
             - name: ROLE_ARN
               value: "arn:s3sentinel:iam::000000000000:role/s3sentinel"
+
+            # Prometheus Pushgateway — each pod pushes its per-operation results
+            # here on completion; Prometheus scrapes it and Grafana aggregates
+            # across all parallel pods (grouped by run_id + identity).
+            - name: PUSHGATEWAY_URL
+              value: "pushgateway.monitoring.svc.cluster.local:9091"
           resources:
             requests:
               cpu: "1"

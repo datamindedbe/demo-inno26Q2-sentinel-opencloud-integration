@@ -79,3 +79,55 @@ resource "kubernetes_config_map" "grafana_dashboard_s3sentinel" {
 
   depends_on = [helm_release.kube_prometheus_stack]
 }
+
+# Prometheus Pushgateway: the s3-benchmark Jobs are short-lived, so Prometheus
+# can't scrape them directly. Each pod pushes its per-operation results here on
+# completion; Prometheus scrapes the gateway and retains the series.
+#
+# - fullnameOverride keeps the Service name stable at `pushgateway` so the Job's
+#   PUSHGATEWAY_URL (pushgateway.monitoring.svc.cluster.local:9091) is fixed.
+# - serviceMonitor.additionalLabels.release matches kube-prometheus-stack's
+#   ServiceMonitor selector, so the operator actually scrapes it.
+# - honorLabels keeps the labels the pods push (run_id, identity, instance)
+#   instead of overwriting them with the gateway's own target labels.
+resource "helm_release" "prometheus_pushgateway" {
+  name             = "pushgateway"
+  repository       = "https://prometheus-community.github.io/helm-charts"
+  chart            = "prometheus-pushgateway"
+  version          = "2.15.0"
+  namespace        = "monitoring"
+  create_namespace = false
+
+  values = [
+    <<EOF
+fullnameOverride: pushgateway
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  honorLabels: true
+  additionalLabels:
+    release: kube-prometheus-stack
+EOF
+  ]
+
+  depends_on = [helm_release.kube_prometheus_stack]
+}
+
+# Grafana dashboard aggregating the s3-benchmark results across all parallel
+# pods (throughput, rate, wall time, and per-identity success/access-denied).
+resource "kubernetes_config_map" "grafana_dashboard_s3_benchmark" {
+  metadata {
+    name      = "grafana-dashboard-s3-benchmark"
+    namespace = "monitoring"
+    labels = {
+      grafana_dashboard = "1"
+    }
+  }
+
+  data = {
+    "s3-benchmark.json" = file("${path.module}/dashboards/s3-benchmark.json")
+  }
+
+  depends_on = [helm_release.kube_prometheus_stack]
+}

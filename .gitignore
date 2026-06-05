@@ -47,3 +47,6 @@ __pycache__/
 
 # OPA policy bundles produced by scripts/publish-opa-policies.sh
 policies/*.tar.gz
+
+# Zitadel service-user client secrets (baked into the benchmark image)
+secrets.json

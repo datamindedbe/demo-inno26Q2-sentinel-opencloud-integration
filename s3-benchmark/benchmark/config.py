@@ -44,10 +44,25 @@ class STSAuth:
         sts_endpoint = os.getenv("STS_ENDPOINT_URL")
         if not all([keycloak_url, sts_endpoint]):
             return None
+
+        client_id = os.getenv("OIDC_CLIENT_ID", "s3sentinel")
+        client_secret = os.getenv("OIDC_CLIENT_SECRET")
+
+        # Optionally run as a named Zitadel service user (e.g. "product-7"). Its
+        # client_id/client_secret are looked up in a JSON secrets file mounted
+        # into the pod: {"product-0": {"client_id": ..., "client_secret": ...}}.
+        identity = os.getenv("OIDC_IDENTITY")
+        if identity:
+            secrets_file = os.getenv("BENCHMARK_SECRETS_FILE", "/app/secrets.json")
+            with open(secrets_file) as f:
+                creds = json.load(f)[identity]
+            client_id = creds["client_id"]
+            client_secret = creds["client_secret"]
+
         grant_type = os.getenv("OIDC_GRANT_TYPE", "password")
         # Validate we have enough credentials for the requested grant type
         if grant_type == "client_credentials":
-            if not os.getenv("OIDC_CLIENT_SECRET"):
+            if not client_secret:
                 return None
         else:
             if not all([os.getenv("OIDC_USERNAME"), os.getenv("OIDC_PASSWORD")]):
@@ -55,13 +70,13 @@ class STSAuth:
         return cls(
             keycloak_url=keycloak_url,
             sts_endpoint=sts_endpoint,
-            client_id=os.getenv("OIDC_CLIENT_ID", "s3sentinel"),
+            client_id=client_id,
             role_arn=os.getenv("ROLE_ARN", "arn:aws:iam::000000000000:role/s3sentinel"),
             role_session_name=os.getenv("ROLE_SESSION_NAME", "benchmark"),
             grant_type=grant_type,
             username=os.getenv("OIDC_USERNAME"),
             password=os.getenv("OIDC_PASSWORD"),
-            client_secret=os.getenv("OIDC_CLIENT_SECRET"),
+            client_secret=client_secret,
             oidc_scope=os.getenv("OIDC_SCOPE", "openid"),
         )
 

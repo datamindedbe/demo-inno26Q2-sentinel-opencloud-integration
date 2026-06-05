@@ -1,0 +1,474 @@
+[
+    {
+        "name": "product-0",
+        "assets": [
+            "product-0/asset-1/",
+            "product-0/private/"
+        ],
+        "read_assets": []
+    },
+    {
+        "name": "product-1",
+        "assets": [
+            "product-1/asset-1/",
+            "product-1/asset-2/",
+            "product-1/asset-3/",
+            "product-1/asset-4/",
+            "product-1/asset-5/",
+            "product-1/asset-6/",
+            "product-1/asset-7/",
+            "product-1/asset-8/",
+            "product-1/private/"
+        ],
+        "read_assets": [
+            "product-25/private/",
+            "product-25/asset-2/",
+            "product-25/asset-3/",
+            "product-13/asset-1/",
+            "product-12/asset-2/"
+        ]
+    },
+    {
+        "name": "product-2",
+        "assets": [
+            "product-2/asset-1/",
+            "product-2/asset-2/",
+            "product-2/asset-3/",
+            "product-2/asset-4/",
+            "product-2/asset-5/",
+            "product-2/private/"
+        ],
+        "read_assets": [
+            "product-27/asset-2/",
+            "product-27/asset-5/",
+            "product-26/asset-4/",
+            "product-5/private/",
+            "product-5/asset-1/",
+            "product-27/asset-1/"
+        ]
+    },
+    {
+        "name": "product-3",
+        "assets": [
+            "product-3/asset-1/",
+            "product-3/asset-2/",
+            "product-3/asset-3/",
+            "product-3/asset-4/",
+            "product-3/asset-5/",
+            "product-3/asset-6/",
+            "product-3/asset-7/",
+            "product-3/private/"
+        ],
+        "read_assets": [
+            "product-15/asset-3/",
+            "product-15/asset-4/",
+            "product-15/private/"
+        ]
+    },
+    {
+        "name": "product-4",
+        "assets": [
+            "product-4/asset-1/",
+            "product-4/private/"
+        ],
+        "read_assets": [
+            "product-3/asset-1/",
+            "product-3/asset-6/",
+            "product-26/asset-1/",
+            "product-26/asset-4/",
+            "product-3/private/"
+        ]
+    },
+    {
+        "name": "product-5",
+        "assets": [
+            "product-5/asset-1/",
+            "product-5/asset-2/",
+            "product-5/asset-3/",
+            "product-5/asset-4/",
+            "product-5/private/"
+        ],
+        "read_assets": [
+            "product-7/asset-3/",
+            "product-16/asset-7/",
+            "product-16/asset-4/",
+            "product-16/asset-3/",
+            "product-7/asset-4/",
+            "product-7/private/"
+        ]
+    },
+    {
+        "name": "product-6",
+        "assets": [
+            "product-6/asset-1/",
+            "product-6/asset-2/",
+            "product-6/asset-3/",
+            "product-6/asset-4/",
+            "product-6/asset-5/",
+            "product-6/asset-6/",
+            "product-6/private/"
+        ],
+        "read_assets": [
+            "product-3/asset-5/",
+            "product-3/asset-6/",
+            "product-27/asset-7/"
+        ]
+    },
+    {
+        "name": "product-7",
+        "assets": [
+            "product-7/asset-1/",
+            "product-7/asset-2/",
+            "product-7/asset-3/",
+            "product-7/asset-4/",
+            "product-7/asset-5/",
+            "product-7/private/"
+        ],
+        "read_assets": [
+            "product-13/asset-3/",
+            "product-13/asset-1/"
+        ]
+    },
+    {
+        "name": "product-8",
+        "assets": [
+            "product-8/asset-1/",
+            "product-8/asset-2/",
+            "product-8/asset-3/",
+            "product-8/asset-4/",
+            "product-8/asset-5/",
+            "product-8/asset-6/",
+            "product-8/private/"
+        ],
+        "read_assets": [
+            "product-16/asset-6/",
+            "product-16/asset-5/",
+            "product-20/asset-3/"
+        ]
+    },
+    {
+        "name": "product-9",
+        "assets": [
+            "product-9/private/"
+        ],
+        "read_assets": [
+            "product-25/private/",
+            "product-25/asset-3/",
+            "product-25/asset-1/",
+            "product-1/asset-3/",
+            "product-1/asset-1/"
+        ]
+    },
+    {
+        "name": "product-10",
+        "assets": [
+            "product-10/asset-1/",
+            "product-10/asset-2/",
+            "product-10/asset-3/",
+            "product-10/asset-4/",
+            "product-10/asset-5/",
+            "product-10/asset-6/",
+            "product-10/asset-7/",
+            "product-10/asset-8/",
+            "product-10/asset-9/",
+            "product-10/private/"
+        ],
+        "read_assets": []
+    },
+    {
+        "name": "product-11",
+        "assets": [
+            "product-11/asset-1/",
+            "product-11/asset-2/",
+            "product-11/asset-3/",
+            "product-11/asset-4/",
+            "product-11/asset-5/",
+            "product-11/asset-6/",
+            "product-11/asset-7/",
+            "product-11/asset-8/",
+            "product-11/private/"
+        ],
+        "read_assets": [
+            "product-26/asset-2/",
+            "product-26/private/",
+            "product-26/asset-4/"
+        ]
+    },
+    {
+        "name": "product-12",
+        "assets": [
+            "product-12/asset-1/",
+            "product-12/asset-2/",
+            "product-12/asset-3/",
+            "product-12/asset-4/",
+            "product-12/asset-5/",
+            "product-12/asset-6/",
+            "product-12/private/"
+        ],
+        "read_assets": [
+            "product-17/asset-10/",
+            "product-17/asset-3/",
+            "product-17/asset-4/"
+        ]
+    },
+    {
+        "name": "product-13",
+        "assets": [
+            "product-13/asset-1/",
+            "product-13/asset-2/",
+            "product-13/asset-3/",
+            "product-13/private/"
+        ],
+        "read_assets": [
+            "product-2/asset-3/",
+            "product-2/private/",
+            "product-2/asset-5/"
+        ]
+    },
+    {
+        "name": "product-14",
+        "assets": [
+            "product-14/asset-1/",
+            "product-14/asset-2/",
+            "product-14/asset-3/",
+            "product-14/asset-4/",
+            "product-14/private/"
+        ],
+        "read_assets": [
+            "product-1/asset-8/"
+        ]
+    },
+    {
+        "name": "product-15",
+        "assets": [
+            "product-15/asset-1/",
+            "product-15/asset-2/",
+            "product-15/asset-3/",
+            "product-15/asset-4/",
+            "product-15/asset-5/",
+            "product-15/asset-6/",
+            "product-15/private/"
+        ],
+        "read_assets": [
+            "product-13/asset-1/",
+            "product-13/private/",
+            "product-13/asset-2/"
+        ]
+    },
+    {
+        "name": "product-16",
+        "assets": [
+            "product-16/asset-1/",
+            "product-16/asset-2/",
+            "product-16/asset-3/",
+            "product-16/asset-4/",
+            "product-16/asset-5/",
+            "product-16/asset-6/",
+            "product-16/asset-7/",
+            "product-16/private/"
+        ],
+        "read_assets": [
+            "product-5/asset-4/",
+            "product-5/asset-1/"
+        ]
+    },
+    {
+        "name": "product-17",
+        "assets": [
+            "product-17/asset-1/",
+            "product-17/asset-2/",
+            "product-17/asset-3/",
+            "product-17/asset-4/",
+            "product-17/asset-5/",
+            "product-17/asset-6/",
+            "product-17/asset-7/",
+            "product-17/asset-8/",
+            "product-17/asset-9/",
+            "product-17/asset-10/",
+            "product-17/private/"
+        ],
+        "read_assets": [
+            "product-15/asset-3/",
+            "product-15/asset-5/"
+        ]
+    },
+    {
+        "name": "product-18",
+        "assets": [
+            "product-18/asset-1/",
+            "product-18/asset-2/",
+            "product-18/private/"
+        ],
+        "read_assets": [
+            "product-25/asset-2/",
+            "product-25/asset-3/",
+            "product-25/asset-1/"
+        ]
+    },
+    {
+        "name": "product-19",
+        "assets": [
+            "product-19/asset-1/",
+            "product-19/private/"
+        ],
+        "read_assets": [
+            "product-16/private/",
+            "product-11/asset-4/",
+            "product-16/asset-6/",
+            "product-11/asset-3/",
+            "product-1/asset-5/",
+            "product-1/asset-1/",
+            "product-11/asset-8/",
+            "product-1/asset-4/"
+        ]
+    },
+    {
+        "name": "product-20",
+        "assets": [
+            "product-20/asset-1/",
+            "product-20/asset-2/",
+            "product-20/asset-3/",
+            "product-20/asset-4/",
+            "product-20/private/"
+        ],
+        "read_assets": [
+            "product-25/asset-2/",
+            "product-25/asset-3/"
+        ]
+    },
+    {
+        "name": "product-21",
+        "assets": [
+            "product-21/asset-1/",
+            "product-21/asset-2/",
+            "product-21/asset-3/",
+            "product-21/private/"
+        ],
+        "read_assets": [
+            "product-1/asset-2/"
+        ]
+    },
+    {
+        "name": "product-22",
+        "assets": [
+            "product-22/asset-1/",
+            "product-22/asset-2/",
+            "product-22/private/"
+        ],
+        "read_assets": [
+            "product-12/asset-3/",
+            "product-21/asset-3/",
+            "product-12/asset-4/",
+            "product-12/private/"
+        ]
+    },
+    {
+        "name": "product-23",
+        "assets": [
+            "product-23/asset-1/",
+            "product-23/asset-2/",
+            "product-23/private/"
+        ],
+        "read_assets": [
+            "product-15/asset-5/"
+        ]
+    },
+    {
+        "name": "product-24",
+        "assets": [
+            "product-24/asset-1/",
+            "product-24/asset-2/",
+            "product-24/private/"
+        ],
+        "read_assets": [
+            "product-2/asset-2/",
+            "product-10/asset-9/",
+            "product-10/asset-5/",
+            "product-2/private/",
+            "product-2/asset-4/",
+            "product-10/asset-2/"
+        ]
+    },
+    {
+        "name": "product-25",
+        "assets": [
+            "product-25/asset-1/",
+            "product-25/asset-2/",
+            "product-25/asset-3/",
+            "product-25/private/"
+        ],
+        "read_assets": [
+            "product-12/asset-6/",
+            "product-12/asset-5/",
+            "product-21/asset-1/",
+            "product-21/private/",
+            "product-21/asset-2/",
+            "product-12/asset-2/"
+        ]
+    },
+    {
+        "name": "product-26",
+        "assets": [
+            "product-26/asset-1/",
+            "product-26/asset-2/",
+            "product-26/asset-3/",
+            "product-26/asset-4/",
+            "product-26/private/"
+        ],
+        "read_assets": [
+            "product-20/asset-4/",
+            "product-20/asset-1/",
+            "product-7/asset-2/"
+        ]
+    },
+    {
+        "name": "product-27",
+        "assets": [
+            "product-27/asset-1/",
+            "product-27/asset-2/",
+            "product-27/asset-3/",
+            "product-27/asset-4/",
+            "product-27/asset-5/",
+            "product-27/asset-6/",
+            "product-27/asset-7/",
+            "product-27/asset-8/",
+            "product-27/asset-9/",
+            "product-27/private/"
+        ],
+        "read_assets": [
+            "product-2/asset-2/",
+            "product-26/asset-3/",
+            "product-2/private/",
+            "product-2/asset-5/"
+        ]
+    },
+    {
+        "name": "product-28",
+        "assets": [
+            "product-28/private/"
+        ],
+        "read_assets": [
+            "product-12/asset-4/",
+            "product-12/asset-1/",
+            "product-12/asset-5/"
+        ]
+    },
+    {
+        "name": "product-29",
+        "assets": [
+            "product-29/asset-1/",
+            "product-29/asset-2/",
+            "product-29/asset-3/",
+            "product-29/asset-4/",
+            "product-29/asset-5/",
+            "product-29/private/"
+        ],
+        "read_assets": [
+            "product-26/private/",
+            "product-16/private/",
+            "product-16/asset-3/",
+            "product-26/asset-3/",
+            "product-16/asset-5/"
+        ]
+    }
+]

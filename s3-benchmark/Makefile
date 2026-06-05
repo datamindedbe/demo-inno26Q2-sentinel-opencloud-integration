@@ -11,7 +11,7 @@
 IMAGE      ?= ghcr.io/datamindedbe/demo-inno26q2-sentinel-opencloud-integration/s3-benchmark:latest
 PLATFORM   ?= linux/amd64
 KUBECONFIG ?= ../infra/.kubeconfig.yml
-NAMESPACE  ?= default
+NAMESPACE  ?= benchmark
 
 # Two job variants. run_without/run_with select between them.
 WITHOUT_JOB  ?= s3-benchmark
@@ -28,6 +28,11 @@ K8S_JOB    ?= $(WITHOUT_FILE)
 BIG_FILE_SIZE_MB ?= 100
 SMALL_FILE_COUNT ?= 100
 PROCESSES        ?= 4
+# Number of pods to run concurrently (with-sentinel job). Each isolates its keys.
+PARALLELISM      ?= 1
+# Zitadel identity for the with-sentinel job: a product-N, or "random" to let
+# each pod pick a random product (and a random write location) at runtime.
+IDENTITY         ?= random
 
 # Credentials for the GHCR pull secret. Prefer a read-only PAT (read:packages)
 # over your full gh token: make pull-secret GHCR_TOKEN=ghp_xxx
@@ -53,8 +58,13 @@ build: ## Build the image for the cluster's architecture (linux/amd64)
 push: ## Build for linux/amd64 and push to GHCR (needs write:packages)
 	docker buildx build --platform $(PLATFORM) -t $(IMAGE) --push .
 
+.PHONY: namespace
+namespace: ## Ensure the target namespace exists
+	kubectl --kubeconfig=$(KUBECONFIG) create namespace $(NAMESPACE) \
+		--dry-run=client -o yaml | kubectl --kubeconfig=$(KUBECONFIG) apply -f -
+
 .PHONY: pull-secret
-pull-secret: ## Create/update the GHCR image pull secret on the cluster
+pull-secret: namespace ## Create/update the GHCR image pull secret on the cluster
 	$(KUBECTL) create secret docker-registry ghcr-pull-secret \
 		--docker-server=ghcr.io \
 		--docker-username=$(GHCR_USER) \
@@ -62,11 +72,13 @@ pull-secret: ## Create/update the GHCR image pull secret on the cluster
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
 
 .PHONY: deploy
-deploy: ## (Re)create the Job on the cluster (workload values templated in)
+deploy: namespace ## (Re)create the Job on the cluster (workload values templated in)
 	$(KUBECTL) delete job $(JOB) --ignore-not-found
 	sed -e 's#@@BIG_FILE_SIZE_MB@@#$(BIG_FILE_SIZE_MB)#g' \
 	    -e 's#@@SMALL_FILE_COUNT@@#$(SMALL_FILE_COUNT)#g' \
 	    -e 's#@@PROCESSES@@#$(PROCESSES)#g' \
+	    -e 's#@@PARALLELISM@@#$(PARALLELISM)#g' \
+	    -e 's#@@IDENTITY@@#$(IDENTITY)#g' \
 	    $(K8S_JOB) | $(KUBECTL) apply -f -
 
 .PHONY: run_without
@@ -81,11 +93,11 @@ run_with: _run ## Run the benchmark through the s3 sentinel proxy
 
 .PHONY: _run
 _run: deploy
-	@echo "==> Waiting for pod to be scheduled..."
+	@echo "==> Waiting for pod(s) to be scheduled..."
 	@until $(KUBECTL) get pod -l job-name=$(JOB) -o name 2>/dev/null | grep -q pod/; do sleep 1; done
 	$(KUBECTL) wait --for=condition=ready pod -l job-name=$(JOB) --timeout=120s 2>/dev/null || true
-	@echo "==> Streaming logs..."
-	$(KUBECTL) logs -f job/$(JOB)
+	@echo "==> Streaming logs (all pods)..."
+	$(KUBECTL) logs -f -l job-name=$(JOB) --prefix --tail=-1 --max-log-requests=100
 
 .PHONY: logs
 logs: ## Show the current Job's logs
