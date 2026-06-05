@@ -1,0 +1,71 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "title": "s3sentinel - CPU & Memory",
+  "uid": "s3sentinel-resources",
+  "tags": ["s3sentinel", "sentinel"],
+  "time": { "from": "now-1h", "to": "now" },
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "label": "Data source",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {},
+        "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "CPU usage (cores)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "none", "min": 0 }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"services\", pod=~\"s3sentinel-.*\", container!=\"\", container!=\"POD\"}[5m]))",
+          "legendFormat": "cpu cores used"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "sum(kube_pod_container_resource_limits{namespace=\"services\", pod=~\"s3sentinel-.*\", resource=\"cpu\"})",
+          "legendFormat": "cpu limit"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Memory working set",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "bytes", "min": 0 }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"services\", pod=~\"s3sentinel-.*\", container!=\"\", container!=\"POD\"})",
+          "legendFormat": "memory used"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "sum(kube_pod_container_resource_limits{namespace=\"services\", pod=~\"s3sentinel-.*\", resource=\"memory\"})",
+          "legendFormat": "memory limit"
+        }
+      ]
+    }
+  ]
+}
