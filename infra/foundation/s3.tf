@@ -20,6 +20,45 @@ resource "upcloud_managed_object_storage_bucket" "bucket" {
   name         = "dp-data-bucket"
 }
 
+resource "upcloud_managed_object_storage" "dp-stack-opa-policies" {
+  name              = "${var.resource_prefix}-opa-${random_string.random.result}"
+  region            = var.region
+  configured_status = "started"
+
+  network {
+    family = "IPv4"
+    name   = "my-public-network"
+    type   = "public"
+  }
+
+  labels = {
+    managed_by = "terraform"
+    project    = var.resource_prefix
+  }
+}
+
+resource "upcloud_managed_object_storage_bucket" "opa_policies" {
+  service_uuid = upcloud_managed_object_storage.dp-stack-opa-policies.id
+  name         = "dp-opa-policies-bucket"
+}
+
+resource "upcloud_managed_object_storage_user" "opa_user" {
+  username     = "${var.resource_prefix}-opa-user"
+  service_uuid = upcloud_managed_object_storage.dp-stack-opa-policies.id
+}
+
+resource "upcloud_managed_object_storage_user_access_key" "opa_user" {
+  username     = upcloud_managed_object_storage_user.opa_user.username
+  service_uuid = upcloud_managed_object_storage.dp-stack-opa-policies.id
+  status       = "Active"
+}
+
+resource "upcloud_managed_object_storage_user_policy" "opa_user" {
+  username     = upcloud_managed_object_storage_user.opa_user.username
+  service_uuid = upcloud_managed_object_storage.dp-stack-opa-policies.id
+  name         = "ECSS3ReadOnlyAccess"
+}
+
 resource "random_string" "random" {
   length  = 16
   special = false

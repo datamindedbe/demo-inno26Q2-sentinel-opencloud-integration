@@ -44,3 +44,6 @@ terraform.rc
 __pycache__/
 
 *kubeconfig.yml
+
+# OPA policy bundles produced by scripts/publish-opa-policies.sh
+policies/*.tar.gz
