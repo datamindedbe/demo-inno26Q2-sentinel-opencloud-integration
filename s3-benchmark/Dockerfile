@@ -18,6 +18,11 @@ COPY --from=builder /app/.venv /app/.venv
 COPY canal/ canal/
 COPY benchmark/ benchmark/
 COPY main.py ./
+# Zitadel service-user identities (product-0..29). Baked in; selected at runtime
+# via OIDC_IDENTITY. NOTE: bakes secrets into the (private) image layers.
+COPY secrets.json ./
+# Product -> writable asset paths mapping, used to pick a random write location.
+COPY world.json ./
 
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH=/app

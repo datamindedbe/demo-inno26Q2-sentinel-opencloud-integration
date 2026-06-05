@@ -44,3 +44,6 @@ terraform.rc
 __pycache__/
 
 *kubeconfig.yml
+
+# Zitadel service-user client secrets (baked into the benchmark image)
+secrets.json
