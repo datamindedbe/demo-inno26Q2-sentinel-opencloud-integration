@@ -79,8 +79,8 @@ resource "helm_release" "opa" {
             service  = "policies"
             resource = var.bundle_resource
             polling = {
-              min_delay_seconds = 30
-              max_delay_seconds = 60
+              min_delay_seconds = 5
+              max_delay_seconds = 5
             }
           }
         }
