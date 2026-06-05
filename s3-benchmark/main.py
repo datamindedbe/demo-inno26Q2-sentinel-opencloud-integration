@@ -66,6 +66,11 @@ KEY_PREFIX = f"benchmark/{RUN_ID}"
 BIG_FILE_KEY = f"{KEY_PREFIX}/big_file"
 SMALL_PREFIX = f"{KEY_PREFIX}/small"
 
+# Set by _apply_world_selection when this run was *deliberately* pointed at a
+# forbidden path (see --denied-percentage). Lets the panel and the pushed
+# metrics distinguish an expected denial from an unexpected (policy bug) one.
+EXPECTED_DENIED = False
+
 console = Console()
 
 
@@ -260,7 +265,13 @@ def run(
             f"Host      : [cyan]{socket.gethostname()}[/cyan]\n"
             f"Identity  : [cyan]{os.getenv('OIDC_IDENTITY', '-')}[/cyan]\n"
             f"Run id    : [cyan]{RUN_ID}[/cyan]  (keys under {KEY_PREFIX}/)\n"
-            f"Endpoint  : [cyan]{config.endpoint_url}[/cyan]\n"
+            + (
+                "Expected  : [bold yellow]DENIED[/bold yellow] "
+                "(deliberately writing to another product's asset)\n"
+                if EXPECTED_DENIED
+                else ""
+            )
+            + f"Endpoint  : [cyan]{config.endpoint_url}[/cyan]\n"
             f"Bucket    : [cyan]{config.bucket}[/cyan]\n"
             f"Big file  : [cyan]{_s3_uri(config.bucket, BIG_FILE_KEY)}[/cyan]\n"
             f"Small dir : [cyan]{_s3_uri(config.bucket, SMALL_PREFIX)}/[/cyan]\n"
@@ -302,13 +313,16 @@ def _push_summary(summary: dict) -> None:
     if not pushgateway_url:
         return
     try:
-        from benchmark.metrics import push_results
+        from benchmark.metrics import parse_labels, push_results
 
         push_results(
             pushgateway_url,
             identity=os.getenv("OIDC_IDENTITY", "-"),
             run_id=RUN_ID,
             summary=summary,
+            expected_denied=EXPECTED_DENIED,
+            experiment_id=os.getenv("EXPERIMENT_ID", ""),
+            experiment_labels=parse_labels(os.getenv("EXPERIMENT_LABELS")),
         )
         console.print(f"[dim]Pushed results to {pushgateway_url}[/dim]")
     except Exception as e:  # noqa: BLE001 — never let metrics break the run
@@ -479,19 +493,25 @@ def _benchmark_steps(
     )
 
 
-def _apply_world_selection() -> None:
+def _apply_world_selection(denied_percentage: float = 0.0) -> None:
     """Pick this run's identity and write location from world.json.
 
     - Identity: OIDC_IDENTITY if it names a concrete product; "random"/unset/
       unknown means pick a random product. The chosen product is written back to
       OIDC_IDENTITY so STSAuth.from_env() runs as that service user.
-    - Location: a random path from the chosen product's writable `assets`,
-      suffixed with RUN_ID so parallel runs on the same asset don't collide.
+    - Location: normally a random path from the chosen product's own writable
+      `assets`, suffixed with RUN_ID so parallel runs on the same asset don't
+      collide — this should always be allowed by sentinel.
+    - Deliberate denials: with probability `denied_percentage` (0..1) the write
+      location is instead a random asset belonging to a *different* product —
+      a path this identity may not write to, so sentinel should deny it. Used to
+      benchmark/visualise the deny path. The decision is recorded in the global
+      EXPECTED_DENIED so the panel and metrics can flag it as expected.
 
     No-op (keeps the default benchmark/<run-id> prefix) when the world file is
     absent — e.g. local / standard-AWS runs.
     """
-    global BIG_FILE_KEY, SMALL_PREFIX, KEY_PREFIX
+    global BIG_FILE_KEY, SMALL_PREFIX, KEY_PREFIX, EXPECTED_DENIED
 
     world_file = os.getenv("BENCHMARK_WORLD_FILE", "/app/world.json")
     if not os.path.exists(world_file):
@@ -508,7 +528,25 @@ def _apply_world_selection() -> None:
     assets = products[identity].get("assets") or []
     if not assets:
         raise SystemExit(f"product {identity!r} has no writable assets in world.json")
-    asset = random.choice(assets).rstrip("/")
+
+    if denied_percentage > 0 and random.random() < denied_percentage:
+        # Deliberately target a path this identity can't write to: pick an asset
+        # owned by a *different* product. Asset paths are product-namespaced
+        # (e.g. "product-3/asset-1/"), so this is never in our own `assets` and
+        # sentinel should reject the write.
+        foreign = [
+            a
+            for name, p in products.items()
+            if name != identity
+            for a in (p.get("assets") or [])
+        ]
+        if foreign:
+            asset = random.choice(foreign).rstrip("/")
+            EXPECTED_DENIED = True
+        else:
+            asset = random.choice(assets).rstrip("/")
+    else:
+        asset = random.choice(assets).rstrip("/")
 
     KEY_PREFIX = f"{asset}/{RUN_ID}"
     BIG_FILE_KEY = f"{KEY_PREFIX}/big_file"
@@ -556,6 +594,15 @@ def main() -> None:
         metavar="N",
         help="Parallel workers for small-file operations (env: PROCESSES).",
     )
+    parser.add_argument(
+        "--denied-percentage",
+        type=float,
+        default=float(os.getenv("DENIED_PERCENTAGE", "0") or 0),
+        metavar="FRAC",
+        help="Fraction (0..1) of runs that deliberately target a forbidden "
+        "write path (an asset of another product) to exercise the deny path "
+        "(env: DENIED_PERCENTAGE).",
+    )
 
     sts = parser.add_argument_group(
         "STS / OIDC auth",
@@ -595,8 +642,9 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    # Pick this run's product identity + write location (random by default).
-    _apply_world_selection()
+    # Pick this run's product identity + write location (random by default;
+    # deliberately forbidden for a --denied-percentage fraction of runs).
+    _apply_world_selection(denied_percentage=args.denied_percentage)
 
     sts_auth = None
     if (

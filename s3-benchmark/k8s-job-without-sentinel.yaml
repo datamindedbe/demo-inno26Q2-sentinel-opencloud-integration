@@ -5,6 +5,10 @@ metadata:
   namespace: benchmark
 spec:
   ttlSecondsAfterFinished: 60
+  # Run @@PARALLELISM@@ pods concurrently (templated by the Makefile). Each pod
+  # self-assigns a random RUN_ID, so they isolate their own object keys.
+  completions: @@PARALLELISM@@
+  parallelism: @@PARALLELISM@@
   template:
     spec:
       restartPolicy: Never
@@ -34,6 +38,12 @@ spec:
             # so Grafana can compare with/without-sentinel runs side by side.
             - name: PUSHGATEWAY_URL
               value: "pushgateway.monitoring.svc.cluster.local:9091"
+            # Groups all pods of this run and exposes the run's knobs as labels
+            # on the pushed metrics (templated by the Makefile).
+            - name: EXPERIMENT_ID
+              value: "@@EXPERIMENT_ID@@"
+            - name: EXPERIMENT_LABELS
+              value: "@@EXPERIMENT_LABELS@@"
           resources:
             requests:
               cpu: "1"

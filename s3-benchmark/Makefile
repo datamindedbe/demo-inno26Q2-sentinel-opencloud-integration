@@ -33,6 +33,18 @@ PARALLELISM      ?= 1
 # Zitadel identity for the with-sentinel job: a product-N, or "random" to let
 # each pod pick a random product (and a random write location) at runtime.
 IDENTITY         ?= random
+# Fraction (0..1) of pods that deliberately write to a forbidden path (an asset
+# of another product) to exercise the sentinel deny path. 0 = always allowed.
+DENIED_PERCENTAGE ?= 0
+# Groups all pods of one benchmark run under a single id, attached as a label to
+# the pushed Prometheus metrics so a run is filterable in Grafana. Pass your own,
+# e.g. make run_with EXPERIMENT_ID=baseline-100mb; defaults to a timestamp.
+EXPERIMENT_ID    ?= exp-$(shell date +%Y%m%d-%H%M%S)
+# The run's knobs, attached as labels to every pushed metric so you can filter/
+# group by them in Grafana (e.g. compare throughput across big_file_size_mb).
+# Add a new param here (key=value, comma-separated) and it shows up as a label —
+# no code change needed. Keys must be valid Prometheus label names.
+EXPERIMENT_LABELS ?= big_file_size_mb=$(BIG_FILE_SIZE_MB),small_file_count=$(SMALL_FILE_COUNT),processes=$(PROCESSES),parallelism=$(PARALLELISM),denied_percentage=$(DENIED_PERCENTAGE)
 
 # Credentials for the GHCR pull secret. Prefer a read-only PAT (read:packages)
 # over your full gh token: make pull-secret GHCR_TOKEN=ghp_xxx
@@ -79,6 +91,9 @@ deploy: namespace ## (Re)create the Job on the cluster (workload values template
 	    -e 's#@@PROCESSES@@#$(PROCESSES)#g' \
 	    -e 's#@@PARALLELISM@@#$(PARALLELISM)#g' \
 	    -e 's#@@IDENTITY@@#$(IDENTITY)#g' \
+	    -e 's#@@DENIED_PERCENTAGE@@#$(DENIED_PERCENTAGE)#g' \
+	    -e 's#@@EXPERIMENT_ID@@#$(EXPERIMENT_ID)#g' \
+	    -e 's#@@EXPERIMENT_LABELS@@#$(EXPERIMENT_LABELS)#g' \
 	    $(K8S_JOB) | $(KUBECTL) apply -f -
 
 .PHONY: run_without

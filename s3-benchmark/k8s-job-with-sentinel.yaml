@@ -55,6 +55,12 @@ spec:
             # across all parallel pods (grouped by run_id + identity).
             - name: PUSHGATEWAY_URL
               value: "pushgateway.monitoring.svc.cluster.local:9091"
+            # Groups all pods of this run and exposes the run's knobs as labels
+            # on the pushed metrics (templated by the Makefile).
+            - name: EXPERIMENT_ID
+              value: "@@EXPERIMENT_ID@@"
+            - name: EXPERIMENT_LABELS
+              value: "@@EXPERIMENT_LABELS@@"
           resources:
             requests:
               cpu: "1"
