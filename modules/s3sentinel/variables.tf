@@ -35,3 +35,16 @@ variable "jwt_audience" {
   type        = string
   description = "Expected 'aud' claim in JWTs, typically the Zitadel project resource ID or client ID."
 }
+
+variable "sts_token_secret" {
+  type        = string
+  default     = ""
+  sensitive   = true
+  description = "HMAC secret used to sign/validate STS session tokens. When empty, the STS server is disabled and port 8090 is not exposed."
+}
+
+variable "sts_token_ttl" {
+  type        = string
+  default     = "1h"
+  description = "Lifetime of STS-issued credentials (Go duration string, e.g. '1h', '30m')."
+}

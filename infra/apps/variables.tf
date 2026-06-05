@@ -9,6 +9,11 @@ variable "organisation_id" {
   description = "The ID of the ZITADEL organisation."
 }
 
+variable "s3sentinel_bucket_domain_name" {
+  type        = string
+  description = "The domain name of the s3 storage bucket endpoint."
+}
+
 variable "storage_bucket_name" {
   type        = string
   description = "The name of the storage bucket to use for storing terraform state."
@@ -42,5 +47,18 @@ variable "s3sentinel_backend_secret_key" {
   type        = string
   sensitive   = true
   description = "Secret key for the S3 backend used by s3sentinel."
+}
+
+variable "s3sentinel_sts_token_secret" {
+  type        = string
+  default     = ""
+  sensitive   = true
+  description = "HMAC secret used to sign/validate s3sentinel STS session tokens. When empty, the STS server is disabled."
+}
+
+variable "s3sentinel_sts_token_ttl" {
+  type        = string
+  default     = "1h"
+  description = "Lifetime of STS-issued credentials (Go duration string, e.g. '1h', '30m')."
 }
 

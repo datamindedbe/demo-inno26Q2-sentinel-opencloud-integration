@@ -1,3 +1,4 @@
+s3sentinel_bucket_domain_name = ""
 storage_bucket_domain_name = "your domain name (ends with upcloudobjects.com)"
 storage_bucket_name = "your storage bucket name"
 hosted_domain = "your hosted domain name (e.g. demo.yourcompany.com)"
@@ -7,3 +8,5 @@ organisation_id = "your zitadel organization id"
 s3sentinel_backend_access_key = "your S3 access key"
 s3sentinel_backend_secret_key = "your S3 secret key"
 # s3sentinel_jwt_audience is derived automatically from the Zitadel project created by the zitadel_apps module
+# Set to enable the STS credential-vending server on port 8090. Leave empty to disable.
+s3sentinel_sts_token_secret = ""
