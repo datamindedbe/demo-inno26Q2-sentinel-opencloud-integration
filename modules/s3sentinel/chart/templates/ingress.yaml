@@ -18,18 +18,18 @@ spec:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    {{- range $hostEntry := .Values.ingress.hosts }}
+    - host: {{ $hostEntry.host | quote }}
       http:
         paths:
-          {{- range .paths }}
+          {{- range $hostEntry.paths }}
           - path: {{ .path }}
             pathType: {{ .pathType }}
             backend:
               service:
                 name: {{ include "s3sentinel.fullname" $ }}
                 port:
-                  name: proxy
+                  name: {{ default "proxy" $hostEntry.servicePort }}
           {{- end }}
     {{- end }}
 {{- end }}

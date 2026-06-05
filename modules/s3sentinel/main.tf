@@ -29,18 +29,35 @@ resource "helm_release" "s3sentinel" {
             "traefik.ingress.kubernetes.io/router.entrypoints"      = "websecure"
             "traefik.ingress.kubernetes.io/router.tls.certresolver" = "letsencrypt"
           }
-          hosts = [
-            {
-              host  = "s3sentinel.${var.domain}"
-              paths = [{ path = "/", pathType = "Prefix" }]
-            }
-          ]
-          tls = [
-            {
-              secretName = "s3sentinel-tls"
-              hosts      = ["s3sentinel.${var.domain}"]
-            }
-          ]
+          hosts = concat(
+            [
+              {
+                host  = "s3sentinel.${var.domain}"
+                paths = [{ path = "/", pathType = "Prefix" }]
+              }
+            ],
+            var.sts_token_secret != "" ? [
+              {
+                host        = "s3sentinel-sts.${var.domain}"
+                servicePort = "sts"
+                paths       = [{ path = "/", pathType = "Prefix" }]
+              }
+            ] : []
+          )
+          tls = concat(
+            [
+              {
+                secretName = "s3sentinel-tls"
+                hosts      = ["s3sentinel.${var.domain}"]
+              }
+            ],
+            var.sts_token_secret != "" ? [
+              {
+                secretName = "s3sentinel-sts-tls"
+                hosts      = ["s3sentinel-sts.${var.domain}"]
+              }
+            ] : []
+          )
         }
       },
       var.sts_token_secret != "" ? {
