@@ -145,11 +145,6 @@ query_proxy = make_tpcds_task(
     "tpcds_query_proxy", "query", SCALE_FACTOR, proxy_data_path, proxy_config, NUM_WORKERS,
     extra_args=proxy_sts_args
 )
-# TODO: Proxy tasks disabled pending JWT bearer token auth fix
-# preflight_proxy >> gen_direct
-# preflight_proxy >> gen_proxy
-# gen_proxy >> query_proxy
-
 compare = make_compare_task()
 
 preflight_direct = make_preflight_task(
@@ -180,6 +175,11 @@ query_direct = make_tpcds_task(
 )
 
 
-# Task dependencies: Direct path only for now
+# Task dependencies:
+preflight_proxy >> gen_direct
+preflight_proxy >> gen_proxy
 preflight_direct >> gen_direct
+preflight_direct >> gen_proxy
 gen_direct >> query_direct
+gen_proxy >> query_proxy
+[query_direct, query_proxy] >> compare

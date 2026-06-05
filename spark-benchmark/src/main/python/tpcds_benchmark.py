@@ -59,31 +59,37 @@ def parse_args():
 
 def get_zitadel_jwt(zitadel_endpoint, client_id, client_secret, audience):
     """
-    Get a Zitadel JWT via client_credentials grant.
+    Get a Zitadel JWT via client_credentials grant using HTTP Basic Auth.
     The returned id_token is a JWT signed by Zitadel's JWKS, suitable
     for use as WebIdentityToken with the s3sentinel STS endpoint.
     """
-    import urllib.request
-    import urllib.parse
     import json
+    import urllib.parse
+    import urllib.request
+    import base64
 
     scope = f"openid urn:zitadel:iam:org:project:id:{audience}:aud"
+    
+    # Use HTTP Basic Auth for client credentials (client_id:client_secret in Authorization header)
+    credentials = urllib.parse.quote(client_id, safe="") + ":" + urllib.parse.quote(client_secret or "", safe="")
+    auth_header = "Basic " + base64.b64encode(credentials.encode()).decode()
+    
+    # Send only grant_type and scope in body
     data = urllib.parse.urlencode({
         "grant_type": "client_credentials",
-        "client_id": client_id,
-        "client_secret": client_secret,
         "scope": scope,
     }).encode()
 
     url = f"{zitadel_endpoint.rstrip('/')}/oauth/v2/token"
     req = urllib.request.Request(url, data=data, method="POST")
     req.add_header("Content-Type", "application/x-www-form-urlencoded")
+    req.add_header("Authorization", auth_header)
 
     with urllib.request.urlopen(req) as resp:
         body = json.loads(resp.read())
 
-    # Try id_token first (for machine-to-machine), fall back to access_token
-    token = body.get("id_token") or body.get("access_token")
+    # Use access_token (has proper TTL); id_token has exp==iat (zero lifetime)
+    token = body.get("access_token") or body.get("id_token")
     if not token:
         raise RuntimeError(f"Zitadel client_credentials grant returned no token: {body}")
     logger.info("Zitadel JWT obtained successfully")
@@ -114,31 +120,32 @@ def get_sts_credentials(sts_endpoint, bearer_token=None, zitadel_endpoint=None,
     if not jwt_token:
         raise ValueError("No authentication token available: provide either bearer_token or Zitadel credentials")
 
-    # Use boto3 STS client for proper protocol handling
-    import boto3
-    from botocore.config import Config
-    
-    sts = boto3.client(
-        "sts",
-        endpoint_url=sts_endpoint,
-        aws_access_key_id="placeholder",
-        aws_secret_access_key="placeholder",
-        region_name="us-east-1",
-        config=Config(signature_version='s3v4'),
-    )
-    
+    import xml.etree.ElementTree as ET
+
+    data = urllib.parse.urlencode({
+        "Action": "AssumeRoleWithWebIdentity",
+        "WebIdentityToken": jwt_token,
+        "RoleArn": "arn:aws:iam::000000000000:role/s3sentinel",
+        "RoleSessionName": "spark-benchmark",
+        "Version": "2011-06-15",
+    }).encode()
+
     logger.info(f"Assuming role via STS: {sts_endpoint}")
-    resp = sts.assume_role_with_web_identity(
-        RoleArn="arn:aws:sts::000000000000:assumed-role/s3sentinel/spark-benchmark",
-        RoleSessionName="spark-benchmark",
-        WebIdentityToken=jwt_token,
-    )
-    
-    creds = resp["Credentials"]
+    req = urllib.request.Request(sts_endpoint.rstrip("/"), data=data, method="POST")
+    req.add_header("Content-Type", "application/x-www-form-urlencoded")
+    with urllib.request.urlopen(req) as resp:
+        body = resp.read()
+
+    ns = "https://sts.amazonaws.com/doc/2011-06-15/"
+    root = ET.fromstring(body)
+    creds = root.find(f".//{{{ns}}}Credentials")
+    if creds is None:
+        raise RuntimeError(f"STS response missing Credentials: {body.decode()[:500]}")
+
     return {
-        "access_key": creds["AccessKeyId"],
-        "secret_key": creds["SecretAccessKey"],
-        "session_token": creds["SessionToken"],
+        "access_key": creds.find(f"{{{ns}}}AccessKeyId").text,
+        "secret_key": creds.find(f"{{{ns}}}SecretAccessKey").text,
+        "session_token": creds.find(f"{{{ns}}}SessionToken").text,
     }
 
 
@@ -337,6 +344,13 @@ def check_s3_connectivity(spark, data_path, timeout_seconds=30):
     Fails fast with clear error message if connection fails.
     """
     logger.info(f"Checking S3 connectivity to {data_path}...")
+    
+    # Log current S3A configuration
+    hc = spark._jsc.hadoopConfiguration()
+    logger.info(f"S3A Provider: {hc.get('fs.s3a.aws.credentials.provider')}")
+    logger.info(f"S3A Access Key: {hc.get('fs.s3a.access.key')[:10] if hc.get('fs.s3a.access.key') else 'NOT SET'}...")
+    logger.info(f"S3A Session Token set: {bool(hc.get('fs.s3a.session.token'))}")
+    logger.info(f"S3A Endpoint: {hc.get('fs.s3a.endpoint')}")
 
     # Extract bucket from path (s3a://bucket/path -> bucket)
     parts = data_path.replace("s3a://", "").split("/")
@@ -346,6 +360,7 @@ def check_s3_connectivity(spark, data_path, timeout_seconds=30):
     try:
         # Try to write a small test file
         test_df = spark.createDataFrame([("connectivity_check", 1)], ["test", "value"])
+        logger.info(f"Writing test file to {test_path}...")
         test_df.write.mode("overwrite").parquet(test_path)
 
         # Read it back to verify round-trip
@@ -384,31 +399,44 @@ def main():
 
     builder = SparkSession.builder.appName("tpcds-benchmark")
 
-    # Try STS credential exchange if configured, but make it optional
-    creds_obtained = False
+    creds = None
     if args.sts_endpoint:
-        try:
-            logger.info(f"Fetching temporary credentials from STS: {args.sts_endpoint}")
-            creds = get_sts_credentials(
-                args.sts_endpoint,
-                bearer_token=getattr(args, "bearer_token", None),
-                zitadel_endpoint=getattr(args, "zitadel_endpoint", None),
-                zitadel_client_id=getattr(args, "zitadel_client_id", None),
-                zitadel_client_secret=getattr(args, "zitadel_client_secret", None),
-                zitadel_audience=getattr(args, "zitadel_audience", None),
-            )
-            builder = (builder
-                       .config("spark.hadoop.fs.s3a.aws.credentials.provider",
-                               "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider")
-                       .config("spark.hadoop.fs.s3a.access.key", creds["access_key"])
-                       .config("spark.hadoop.fs.s3a.secret.key", creds["secret_key"])
-                       .config("spark.hadoop.fs.s3a.session.token", creds["session_token"]))
-            logger.info("STS credentials obtained successfully")
-            creds_obtained = True
-        except Exception as e:
-            logger.warning(f"Failed to obtain STS credentials: {e}. Continuing with static credentials.")
+        logger.info(f"Fetching temporary credentials from STS: {args.sts_endpoint}")
+        creds = get_sts_credentials(
+            args.sts_endpoint,
+            bearer_token=getattr(args, "bearer_token", None),
+            zitadel_endpoint=getattr(args, "zitadel_endpoint", None),
+            zitadel_client_id=getattr(args, "zitadel_client_id", None),
+            zitadel_client_secret=getattr(args, "zitadel_client_secret", None),
+            zitadel_audience=getattr(args, "zitadel_audience", None),
+        )
+        logger.info("STS credentials obtained successfully")
 
     spark = builder.getOrCreate()
+
+    # Apply STS credentials directly to Hadoop Configuration AFTER session creation.
+    # This overrides any credential provider already set in spark.properties by Conveyor,
+    # ensuring the session token is included in every S3A request as X-Amz-Security-Token.
+    if args.sts_endpoint and creds:
+        hc = spark._jsc.hadoopConfiguration()
+        logger.info(f"Setting S3A credentials: access_key={creds['access_key'][:10]}..., session_token_len={len(creds['session_token'])}")
+        hc.set("fs.s3a.aws.credentials.provider",
+               "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider")
+        hc.set("fs.s3a.access.key", creds["access_key"])
+        hc.set("fs.s3a.secret.key", creds["secret_key"])
+        hc.set("fs.s3a.session.token", creds["session_token"])
+        
+        # CRITICAL: Close all cached filesystems so new S3A instances pick up the new config.
+        # S3AFileSystem instances are cached and reused - if we don't close them, they'll
+        # keep using the old SimpleAWSCredentialsProvider set in spark.properties.
+        fs_class = spark._jvm.org.apache.hadoop.fs.FileSystem
+        fs_class.closeAll()
+        logger.info("Closed FileSystem cache to force re-initialization with new credentials")
+        
+        # Log what's now set to verify
+        logger.info(f"Hadoop Config fs.s3a.aws.credentials.provider={hc.get('fs.s3a.aws.credentials.provider')}")
+        logger.info(f"Hadoop Config fs.s3a.session.token set={bool(hc.get('fs.s3a.session.token'))}")
+        logger.info("STS credentials applied and filesystem cache cleared")
 
     try:
         # Preflight mode just checks connectivity and exits
